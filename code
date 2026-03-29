@@ -1,0 +1,104 @@
+class Participant:
+    def __init__(self, name: str, email: str):
+        self.name = name
+        self.email = email
+
+class Conference:
+    def __init__(self, conf_id: str, title: str, max_slots: int):
+        self.conf_id = conf_id
+        self.title = title
+        self.max_slots = max_slots
+        self.participants = []
+
+    def can_register(self) -> bool:
+        return len(self.participants) < self.max_slots
+
+    def register_participant(self, participant: Participant):
+        if not self.can_register():
+            raise ValueError(f"Конференція '{self.title}' заповнена. Реєстрація неможлива.")
+        
+        # Перевірка, чи не зареєстрований вже такий email
+        if any(p.email == participant.email for p in self.participants):
+            raise ValueError("Учасник з таким email вже зареєстрований.")
+            
+        self.participants.append(participant)
+
+
+
+
+
+
+
+from abc import ABC, abstractmethod
+
+class ConferenceRepository(ABC):
+    @abstractmethod
+    def get_by_id(self, conf_id: str):
+        pass
+
+    @abstractmethod
+    def save(self, conference):
+        pass
+
+
+
+
+
+
+
+from .interfaces import ConferenceRepository
+from domain.models import Participant
+
+class RegisterParticipantUseCase:
+    def __init__(self, repository: ConferenceRepository):
+        self.repository = repository
+
+    def execute(self, conf_id: str, name: str, email: str):
+      
+        conference = self.repository.get_by_id(conf_id)
+        if not conference:
+            raise Exception("Конференцію не знайдено")
+
+
+        new_participant = Participant(name=name, email=email)
+
+        conference.register_participant(new_participant)
+        self.repository.save(conference)
+        print(f"Успішно: {name} зареєстрований на {conference.title}")
+
+
+
+
+
+from domain.models import Conference
+from infrastructure.persistence import InMemoryConferenceRepository
+from application.use_cases import RegisterParticipantUseCase
+
+def main():
+  
+    repo = InMemoryConferenceRepository()
+    
+
+    test_conf = Conference("conf-101", "AI Clean Arch 2026", max_slots=2)
+    repo.save(test_conf)
+
+
+    use_case = RegisterParticipantUseCase(repo)
+
+
+    try:
+        # Перша реєстрація - ОК
+        use_case.execute("conf-101", "Олексій", "alex@mail.com")
+        
+        # Друга реєстрація - ОК
+        use_case.execute("conf-101", "Марія", "maria@mail.com")
+        
+        # Третя реєстрація - МАЄ БУТИ ПОМИЛКА (ліміт 2)
+        print("\nСпроба зареєструвати третього учасника...")
+        use_case.execute("conf-101", "Іван", "ivan@mail.com")
+        
+    except Exception as e:
+        print(f"Помилка: {e}")
+
+if __name__ == "__main__":
+    main()
