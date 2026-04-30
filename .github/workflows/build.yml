@@ -35,4 +35,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         # ВАЖЛИВО: Якщо ваш pom.xml в окремій папці (наприклад, BonusClub), додайте -f BonusClub/pom.xml
         # Якщо він у корені, видаліть частину "-f BonusClub/pom.xml"
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=andrew1567_BonusClub -f BonusClub/pom.xml
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=andrew1567_BonusClub BonusClub/pom.xml
