@@ -1,0 +1,61 @@
+name: Release and README Update
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # щоб можна було пушити README і створювати релізи
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # важливо для роботи з історією і тегами
+
+      - name: Generate Data (Version, Joke, PR Name)
+        id: prep
+        run: |
+          # Генеруємо версію
+          VERSION="v1.0.${{ github.run_number }}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Отримуємо жарт з API
+          JOKE=$(curl -s https://api.chucknorris.io/jokes/random | jq -r .value)
+          echo "joke=$JOKE" >> $GITHUB_OUTPUT
+          
+          # Беремо назву коміту (або PR)
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          TITLE=$(echo "$COMMIT_MSG" | head -n 1)
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Update README.md
+        run: |
+          # Видаляємо старий блок релізу, якщо він є
+          sed -i '/## Latest Release Info/,$d' README.md
+          
+          # Дописуємо новий блок в кінець файлу
+          echo "## Latest Release Info" >> README.md
+          echo "- **Version:** ${{ steps.prep.outputs.version }}" >> README.md
+          echo "- **PR Title / Commit:** ${{ steps.prep.outputs.title }}" >> README.md
+          echo "- **Chuck Norris Joke:** ${{ steps.prep.outputs.joke }}" >> README.md
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          # Додаємо [skip ci], щоб не тригерити CI заново
+          git commit -m "docs: update readme with release info [skip ci]" || echo "Nothing to commit"
+          git push
+
+      - name: Create Tag and GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Створюємо реліз через GitHub CLI. Жарт піде прямо в коментар до релізу!
+          gh release create ${{ steps.prep.outputs.version }} \
+            --title "Release ${{ steps.prep.outputs.version }}" \
+            --notes "New stuff arrived. By the way: ${{ steps.prep.outputs.joke }}"
