@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "FleetMaintenance.App/1.0.0": {
+        "dependencies": {
+          "FleetMaintenance.Core": "1.0.0"
+        },
+        "runtime": {
+          "FleetMaintenance.App.dll": {}
+        }
+      },
+      "FleetMaintenance.Core/1.0.0": {
+        "runtime": {
+          "FleetMaintenance.Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FleetMaintenance.App/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FleetMaintenance.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
