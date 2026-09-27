@@ -4,7 +4,10 @@ namespace FleetMaintenance.Core.Domain;
 public sealed class ServiceLine
 {
     public string Description { get; init; } = string.Empty;
+
     public decimal Hours { get; init; }
+
     public decimal HourlyRate { get; init; }
+
     public decimal Amount => Hours * HourlyRate;
 }

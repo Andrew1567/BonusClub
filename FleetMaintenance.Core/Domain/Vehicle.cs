@@ -4,6 +4,8 @@ namespace FleetMaintenance.Core.Domain;
 public sealed class Vehicle
 {
     public string LicensePlate { get; init; } = string.Empty;
+
     public string Model { get; init; } = string.Empty;
+
     public int Mileage { get; init; }
 }
