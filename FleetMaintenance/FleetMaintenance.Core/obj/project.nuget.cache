@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "DUMYVBFZdRtoIhZW1e1Pra8owLOCh8K/T3j/aXupwCx5XWB87XNebKcFuZFeeu/Cxj8wLuj+gnM7VdPFv9/1Kw==",
+  "success": true,
+  "projectFilePath": "D:\\Коледж\\FleetMaintenance\\FleetMaintenance.Core\\FleetMaintenance.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Andrew\\.nuget\\packages\\stylecop.analyzers\\1.2.0-beta.556\\stylecop.analyzers.1.2.0-beta.556.nupkg.sha512",
+    "C:\\Users\\Andrew\\.nuget\\packages\\stylecop.analyzers.unstable\\1.2.0.556\\stylecop.analyzers.unstable.1.2.0.556.nupkg.sha512"
+  ],
+  "logs": []
+}
