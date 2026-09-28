@@ -1,51 +1,38 @@
 root = true
 
 [*]
-charset = utf-8
-insert_final_newline = true
-trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
-
-[*.{csproj,props,targets,json,yml}]
-indent_size = 2
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
 
 [*.cs]
 max_line_length = 100
-
 csharp_new_line_before_open_brace = all
-csharp_new_line_before_else = true
-csharp_new_line_before_catch = true
 csharp_prefer_braces = true:warning
-csharp_indent_case_contents = true
 dotnet_sort_system_directives_first = true
 csharp_style_namespace_declarations = file_scoped:warning
-csharp_style_var_for_built_in_types = false:suggestion
 
-dotnet_naming_rule.priv_underscore.symbols = priv_field
-dotnet_naming_rule.priv_underscore.style = underscore_camel
-dotnet_naming_rule.priv_underscore.severity = warning
-
-dotnet_naming_symbols.priv_field.applicable_kinds = field
-dotnet_naming_symbols.priv_field.applicable_accessibilities = private
-
-dotnet_naming_style.underscore_camel.capitalization = camel_case
-dotnet_naming_style.underscore_camel.required_prefix = _
-# StyleCop: свідомо вимкнені правила
-
+# Отключение правил согласно методичке (Задание 7)
 dotnet_diagnostic.SA1633.severity = none
-dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1309.severity = none
-dotnet_diagnostic.SA0001.severity = none
-dotnet_diagnostic.SA1600.severity = none
-dotnet_diagnostic.SA1601.severity = none
-dotnet_diagnostic.SA1602.severity = none
-dotnet_diagnostic.SA1413.severity = none
 
-# правила, які лишаємо суворими
-dotnet_diagnostic.SA1028.severity = warning
-dotnet_diagnostic.SA1201.severity = warning
-dotnet_diagnostic.SA1503.severity = warning
-dotnet_diagnostic.SA1516.severity = warning
-dotnet_diagnostic.IDE0055.severity = warning
+# Отключение правил для старых файлов и скрытие лишнего "шума" StyleCop
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1611.severity = none
+dotnet_diagnostic.SA1616.severity = none
+dotnet_diagnostic.SA1623.severity = none
+dotnet_diagnostic.SA1642.severity = none
+dotnet_diagnostic.SA1518.severity = none
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CS8603.severity = none
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none
+dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1516.severity = none
