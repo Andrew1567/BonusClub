@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FleetMaintenance.Core</name>
+    </assembly>
+    <members>
+        <member name="T:FleetMaintenance.Core.Domain.MaintenanceRequest">
+            <summary>Заявка на обслуговування автопарку.</summary>
+        </member>
+        <member name="M:FleetMaintenance.Core.Domain.MaintenanceRequest.AddLine(FleetMaintenance.Core.Domain.ServiceLine)">
+            <summary>Додає виконану роботу до заявки.</summary>
+        </member>
+        <member name="M:FleetMaintenance.Core.Domain.MaintenanceRequest.Total">
+            <summary>Обчислює загальну вартість робіт.</summary>
+            <returns></returns>
+        </member>
+        <member name="T:FleetMaintenance.Core.Domain.MaintenanceStatus">
+            <summary>Стан заявки на обслуговування.</summary>
+        </member>
+        <member name="T:FleetMaintenance.Core.Domain.Mechanic">
+            <summary>Механік, який виконує роботи.</summary>
+        </member>
+        <member name="T:FleetMaintenance.Core.Domain.ServiceLine">
+            <summary>Рядок заявки: опис послуги, години та ставка.</summary>
+        </member>
+        <member name="T:FleetMaintenance.Core.Domain.Vehicle">
+            <summary>Транспортний засіб автопарку.</summary>
+        </member>
+        <member name="T:FleetMaintenance.Domain.RepairOrder">
+            <summary>
+            Заявка на ремонт та обслуговування автопарку.
+            </summary>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.#ctor(System.String,System.String)">
+            <summary>
+            Ініціалізує нову заявку на ремонт.
+            </summary>
+            <param name="id">Унікальний ідентифікатор заявки.</param>
+            <param name="customerName">Ім'я клієнта.</param>
+        </member>
+        <member name="P:FleetMaintenance.Domain.RepairOrder.Id">
+            <summary>
+            Отримує ідентифікатор заявки.
+            </summary>
+        </member>
+        <member name="P:FleetMaintenance.Domain.RepairOrder.CustomerName">
+            <summary>
+            Отримує ім'я клієнта.
+            </summary>
+        </member>
+        <member name="P:FleetMaintenance.Domain.RepairOrder.Status">
+            <summary>
+            Отримує поточний статус заявки.
+            </summary>
+        </member>
+        <member name="P:FleetMaintenance.Domain.RepairOrder.CreatedAt">
+            <summary>
+            Отримує дату та час створення заявки.
+            </summary>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.AddLine(System.String,System.Int32,System.Decimal)">
+            <summary>
+            Додає до заявки рядок послуги.
+            </summary>
+            <param name="serviceCode">Код послуги.</param>
+            <param name="quantity">Кількість одиниць послуги.</param>
+            <param name="unitPrice">Ціна за одиницю, грн.</param>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.CalculateTotal(System.Boolean)">
+            <summary>
+            Обчислює загальну суму заявки з урахуванням знижок та ПДВ.
+            </summary>
+            <param name="isRegularCustomer">Чи має клієнт статус постійного.</param>
+            <returns>Загальна вартість ремонту.</returns>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.TryChangeStatus(System.Int32)">
+            <summary>
+            Змінює стан заявки, якщо перехід дозволений правилами предметної області.
+            </summary>
+            <param name="newStatus">Цільовий стан заявки.</param>
+            <returns>
+            true, якщо перехід виконано; false, якщо він заборонений.
+            </returns>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.IsValid">
+            <summary>
+            Перевіряє, чи є заявка валідною для подальшої обробки.
+            </summary>
+            <returns>true, якщо заявка коректна; інакше false.</returns>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.BuildReport">
+            <summary>
+            Формує текстовий звіт по заявці.
+            </summary>
+            <returns>Рядок із переліком послуг та підсумковою сумою.</returns>
+        </member>
+        <member name="M:FleetMaintenance.Domain.RepairOrder.FindById(System.Collections.Generic.List{FleetMaintenance.Domain.RepairOrder},System.String)">
+            <summary>
+            Шукає заявку за ідентифікатором у наданому списку.
+            </summary>
+            <param name="orders">Список заявок для пошуку.</param>
+            <param name="orderId">Ідентифікатор шуканої заявки.</param>
+            <returns>Знайдена заявка або null, якщо не знайдено.</returns>
+        </member>
+    </members>
+</doc>
