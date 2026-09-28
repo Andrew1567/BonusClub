@@ -8,6 +8,21 @@ namespace FleetMaintenance.Domain;
 /// </summary>
 public class RepairOrder
 {
+    private const decimal VatRate = 0.2m;
+    private const decimal RegularDiscountThreshold = 1000m;
+    private const decimal RegularDiscountAmount = 100m;
+    private const decimal LargeOrderThreshold = 5000m;
+    private const decimal LargeOrderDiscountRate = 0.85m;
+    private const int BulkLineCount = 10;
+    private const decimal BulkDiscountAmount = 100m;
+    private const int MaxLineCount = 100;
+    private const int MinCustomerNameLength = 2;
+
+    public const int StatusNew = 0;
+    public const int StatusPaid = 1;
+    public const int StatusSent = 2;
+    public const int StatusCancelled = 3;
+
     private readonly List<string[]> _lines = new List<string[]>();
 
     /// <summary>
@@ -41,8 +56,6 @@ public class RepairOrder
     /// Отримує дату та час створення заявки.
     /// </summary>
     public DateTime CreatedAt { get; private set; }
-    
-    // public string prim; // примітка, поки не треба
 
     /// <summary>
     /// Додає до заявки рядок послуги.
@@ -73,29 +86,23 @@ public class RepairOrder
         {
             int quantity = int.Parse(_lines[i][1]);
             decimal unitPrice = decimal.Parse(_lines[i][2]);
-            total = total + quantity * unitPrice;
-            lineCount = lineCount + 1;
+            total += quantity * unitPrice;
+            lineCount++;
         }
-
-        // if (sum1 > 500) { sum1 = sum1 - 50; } // стара знижка
 
         // Знижки не сумуються: діє лише одна з двох
-        if (isRegularCustomer == true && total > 1000)
+        if (isRegularCustomer && total > RegularDiscountThreshold)
         {
-            total = total - 100;
+            total -= RegularDiscountAmount;
         }
-        else if (total > 5000)
+        else if (total > LargeOrderThreshold)
         {
-            total = total * 0.85m;
-        }
-        else
-        {
-            total = total;
+            total *= LargeOrderDiscountRate;
         }
 
-        if (lineCount > 10)
+        if (lineCount > BulkLineCount)
         {
-            total = total - 100;
+            total -= BulkDiscountAmount;
         }
 
         if (total < 0)
@@ -104,7 +111,7 @@ public class RepairOrder
         }
 
         // ПДВ нараховується на суму вже після всіх знижок
-        total = total + total * 0.2m;
+        total += total * VatRate;
         return Math.Round(total, 2);
     }
 
@@ -117,21 +124,21 @@ public class RepairOrder
     /// </returns>
     public bool TryChangeStatus(int newStatus)
     {
-        if (Status == 0 && newStatus == 1)
+        if (Status == StatusNew && newStatus == StatusPaid)
         {
-            Status = 1;
+            Status = StatusPaid;
             return true;
         }
 
-        if (Status == 1 && newStatus == 2)
+        if (Status == StatusPaid && newStatus == StatusSent)
         {
-            Status = 2;
+            Status = StatusSent;
             return true;
         }
 
-        if (Status == 0 && newStatus == 3)
+        if (Status == StatusNew && newStatus == StatusCancelled)
         {
-            Status = 3;
+            Status = StatusCancelled;
             return true;
         }
 
@@ -145,16 +152,14 @@ public class RepairOrder
     public bool IsValid()
     {
         if (Id != null && Id != string.Empty
-            && CustomerName != null && CustomerName.Length > 2
-            && _lines.Count > 0 && _lines.Count < 100
-            && Status >= 0 && Status <= 3)
+            && CustomerName != null && CustomerName.Length > MinCustomerNameLength
+            && _lines.Count > 0 && _lines.Count < MaxLineCount
+            && Status >= StatusNew && Status <= StatusCancelled)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     /// <summary>
@@ -166,12 +171,12 @@ public class RepairOrder
         string report = string.Empty;
         for (int i = 0; i < _lines.Count; i++)
         {
-            report = report + "Послуга: " + _lines[i][0] + "; кількість: " + _lines[i][1]
-                     + "; ціна: " + _lines[i][2] + "; сума: "
-                     + (int.Parse(_lines[i][1]) * decimal.Parse(_lines[i][2])) + "\n";
+            report += "Послуга: " + _lines[i][0] + "; кількість: " + _lines[i][1]
+                      + "; ціна: " + _lines[i][2] + "; сума: "
+                      + (int.Parse(_lines[i][1]) * decimal.Parse(_lines[i][2])) + "\n";
         }
 
-        report = report + "Разом: " + CalculateTotal(false) + "\n";
+        report += "Разом: " + CalculateTotal(false) + "\n";
         return report;
     }
 
