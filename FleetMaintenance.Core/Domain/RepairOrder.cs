@@ -3,40 +3,67 @@ using System.Collections.Generic;
 
 namespace FleetMaintenance.Domain;
 
-// клас
+/// <summary>
+/// Заявка на ремонт та обслуговування автопарку.
+/// </summary>
 public class RepairOrder
 {
     private readonly List<string[]> _lines = new List<string[]>();
 
-    // конструктор
+    /// <summary>
+    /// Ініціалізує нову заявку на ремонт.
+    /// </summary>
+    /// <param name="id">Унікальний ідентифікатор заявки.</param>
+    /// <param name="customerName">Ім'я клієнта.</param>
     public RepairOrder(string id, string customerName)
     {
-        Id = id; // ставимо id
-        CustomerName = customerName; // ставимо cl
-        CreatedAt = DateTime.Now; // ставимо дату
+        Id = id;
+        CustomerName = customerName;
+        CreatedAt = DateTime.Now;
     }
 
+    /// <summary>
+    /// Отримує ідентифікатор заявки.
+    /// </summary>
     public string Id { get; private set; }
 
+    /// <summary>
+    /// Отримує ім'я клієнта.
+    /// </summary>
     public string CustomerName { get; private set; }
 
+    /// <summary>
+    /// Отримує поточний статус заявки.
+    /// </summary>
     public int Status { get; private set; }
 
+    /// <summary>
+    /// Отримує дату та час створення заявки.
+    /// </summary>
     public DateTime CreatedAt { get; private set; }
-    // 0-новий, 1-оплач, 2-відпр, 3-скасов
+    
     // public string prim; // примітка, поки не треба
 
-    // метод додавання
+    /// <summary>
+    /// Додає до заявки рядок послуги.
+    /// </summary>
+    /// <param name="serviceCode">Код послуги.</param>
+    /// <param name="quantity">Кількість одиниць послуги.</param>
+    /// <param name="unitPrice">Ціна за одиницю, грн.</param>
     public void AddLine(string serviceCode, int quantity, decimal unitPrice)
     {
         string[] line = new string[3];
         line[0] = serviceCode;
         line[1] = quantity.ToString();
         line[2] = unitPrice.ToString();
-        _lines.Add(line); // додаємо у ln
+        _lines.Add(line);
     }
 
-    // ProcessData
+    /// <summary>
+    /// Обчислює загальну суму заявки з урахуванням знижок та ПДВ.
+    /// </summary>
+    /// <param name="isRegularCustomer">Чи має клієнт статус постійного.</param>
+    /// <returns>Загальна вартість ремонту.</returns>
     public decimal CalculateTotal(bool isRegularCustomer)
     {
         decimal total = 0;
@@ -46,12 +73,13 @@ public class RepairOrder
         {
             int quantity = int.Parse(_lines[i][1]);
             decimal unitPrice = decimal.Parse(_lines[i][2]);
-            total = total + quantity * unitPrice; // додаємо до суми
-            lineCount = lineCount + 1; // збільшуємо kolvo на одиницю
+            total = total + quantity * unitPrice;
+            lineCount = lineCount + 1;
         }
 
         // if (sum1 > 500) { sum1 = sum1 - 50; } // стара знижка
 
+        // Знижки не сумуються: діє лише одна з двох
         if (isRegularCustomer == true && total > 1000)
         {
             total = total - 100;
@@ -75,11 +103,18 @@ public class RepairOrder
             total = 0;
         }
 
+        // ПДВ нараховується на суму вже після всіх знижок
         total = total + total * 0.2m;
-        return Math.Round(total, 2); // повертаємо sum1
+        return Math.Round(total, 2);
     }
 
-    // міняємо статус
+    /// <summary>
+    /// Змінює стан заявки, якщо перехід дозволений правилами предметної області.
+    /// </summary>
+    /// <param name="newStatus">Цільовий стан заявки.</param>
+    /// <returns>
+    /// true, якщо перехід виконано; false, якщо він заборонений.
+    /// </returns>
     public bool TryChangeStatus(int newStatus)
     {
         if (Status == 0 && newStatus == 1)
@@ -100,10 +135,13 @@ public class RepairOrder
             return true;
         }
 
-        return false; // не можна
+        return false;
     }
 
-    // перевірка
+    /// <summary>
+    /// Перевіряє, чи є заявка валідною для подальшої обробки.
+    /// </summary>
+    /// <returns>true, якщо заявка коректна; інакше false.</returns>
     public bool IsValid()
     {
         if (Id != null && Id != string.Empty
@@ -119,7 +157,10 @@ public class RepairOrder
         }
     }
 
-    // звіт
+    /// <summary>
+    /// Формує текстовий звіт по заявці.
+    /// </summary>
+    /// <returns>Рядок із переліком послуг та підсумковою сумою.</returns>
     public string BuildReport()
     {
         string report = string.Empty;
@@ -134,7 +175,12 @@ public class RepairOrder
         return report;
     }
 
-    // пошук
+    /// <summary>
+    /// Шукає заявку за ідентифікатором у наданому списку.
+    /// </summary>
+    /// <param name="orders">Список заявок для пошуку.</param>
+    /// <param name="orderId">Ідентифікатор шуканої заявки.</param>
+    /// <returns>Знайдена заявка або null, якщо не знайдено.</returns>
     public static RepairOrder FindById(List<RepairOrder> orders, string orderId)
     {
         for (int i = 0; i < orders.Count; i++)
