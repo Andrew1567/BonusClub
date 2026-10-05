@@ -37,4 +37,13 @@ public static class DocumentGuards
             EnsureLineValid(line);
         }
     }
+
+    public static void EnsureRequestValid(TotalRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.Client);
+        EnsureHeaderValid(request.DocumentId, request.Client.Name, request.Client.Email);
+        EnsureLinesValid(request.Lines);
+        ArgumentOutOfRangeException.ThrowIfNegative(request.DeliveryPrice);
+    }
 }
