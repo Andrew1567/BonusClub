@@ -14,13 +14,13 @@ csharp_prefer_braces = true:warning
 dotnet_sort_system_directives_first = true
 csharp_style_namespace_declarations = file_scoped:warning
 
-# Отключение правил согласно методичке (Задание 7)
+
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1200.severity = none
 dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1309.severity = none
 
-# Отключение правил для старых файлов и скрытие лишнего "шума" StyleCop
+
 dotnet_diagnostic.CS1591.severity = none
 dotnet_diagnostic.SA1600.severity = none
 dotnet_diagnostic.SA1602.severity = none

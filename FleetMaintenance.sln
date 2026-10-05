@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetMaintenance.Core", "Fl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetMaintenance.App", "FleetMaintenance.App\FleetMaintenance.App.csproj", "{46F469CD-208C-4922-92A6-6820E53AC098}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{652D1D2E-476C-4B1A-BB5A-3A3D01190964}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FleetMaintenance.Tests", "tests\FleetMaintenance.Tests\FleetMaintenance.Tests.csproj", "{80B8A6F7-CC65-41A5-A66F-B2D1915EC9D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,12 @@ Global
 		{46F469CD-208C-4922-92A6-6820E53AC098}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46F469CD-208C-4922-92A6-6820E53AC098}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46F469CD-208C-4922-92A6-6820E53AC098}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80B8A6F7-CC65-41A5-A66F-B2D1915EC9D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80B8A6F7-CC65-41A5-A66F-B2D1915EC9D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80B8A6F7-CC65-41A5-A66F-B2D1915EC9D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80B8A6F7-CC65-41A5-A66F-B2D1915EC9D3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{80B8A6F7-CC65-41A5-A66F-B2D1915EC9D3} = {652D1D2E-476C-4B1A-BB5A-3A3D01190964}
 	EndGlobalSection
 EndGlobal
