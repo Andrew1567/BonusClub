@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using FleetMaintenance.Core.Legacy;
 using FleetMaintenance.Core.Documents;
 using Xunit;
+using System.IO;
+using FleetMaintenance.Core.Reporting;
 
 namespace FleetMaintenance.Tests;
 
@@ -68,5 +70,37 @@ public class LegacyProcessorTests
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             DocumentGuards.EnsureLineValid(line));
+    }
+    [Fact]
+    public void TextOf_ContainsTotalLine()
+    {
+        TotalRequest request = new(
+            DocumentId: 1,
+            Client: new ClientInfo("Іваненко", "i@ex.com", true),
+            Lines: new List<OrderLine>
+            {
+                new OrderLine { Sku = "A1", Quantity = 12, UnitPrice = 100m },
+                new OrderLine { Sku = "B2", Quantity = 1, UnitPrice = 250m }
+            },
+            CreatedAt: new DateOnly(2026, 3, 10),
+            CouponCode: string.Empty,
+            Status: DocumentStatus.New,
+            DeliveryPrice: 60m);
+
+        TotalResult result = DocumentTotalCalculator.Calculate(request);
+        string text = DocumentReport.TextOf(request, result);
+
+        Assert.Contains("Разом: 1292.70", text);
+    }
+
+    [Fact]
+    public void Print_WritesReportToOutput()
+    {
+        StringWriter writer = new();
+        DocumentReportPrinter printer = new(writer);
+
+        printer.Print("Разом: 10.00");
+
+        Assert.Contains("10.00", writer.ToString());
     }
 }
