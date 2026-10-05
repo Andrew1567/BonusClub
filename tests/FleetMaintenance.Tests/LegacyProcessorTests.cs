@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FleetMaintenance.Core.Legacy;
 using Xunit;
+using FleetMaintenance.Core.Documents;
 
 namespace FleetMaintenance.Tests;
 
@@ -43,16 +44,23 @@ public class LegacyProcessorTests
         Assert.Equal(420m, total);
         Assert.Equal("Shipped", next);
     }
+[Fact]
+    public void Calculate_NoLines_ThrowsArgument()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            DocumentGuards.EnsureLinesValid(new List<OrderLine>()));
+    }
 
     [Fact]
-    public void Process_NoLines_ReturnsMinusOne()
+    public void Calculate_ZeroQuantity_ThrowsRange()
     {
-        decimal total = LegacyProcessor.Process(
-            3, "Коваль", "k@ex.com", false,
-            new List<OrderLine>(),
-            new DateOnly(2026, 3, 10), string.Empty, "New", false,
-            60m, out string next);
+        OrderLine line = new()
+        {
+            Sku = "A1", Quantity = 0, UnitPrice = 10m
+        };
 
-        Assert.Equal(-1m, total);
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            DocumentGuards.EnsureLineValid(line));
     }
+ 
 }
