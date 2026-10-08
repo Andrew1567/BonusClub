@@ -17,28 +17,28 @@ public static class LegacyProcessor
         
         if (docId <= 0)
         {
-            Console.WriteLine("Помилка: номер документа");
+            System.Diagnostics.Debug.WriteLine("Помилка: номер документа");
             return -1;
         }
         if (clientName == null || clientName == "")
         {
-            Console.WriteLine("Помилка: немає клієнта");
+            System.Diagnostics.Debug.WriteLine("Помилка: немає клієнта");
             return -1;
         }
         if (clientEmail == null || !clientEmail.Contains('@'))
         {
-            Console.WriteLine("Помилка: пошта клієнта");
+            System.Diagnostics.Debug.WriteLine("Помилка: пошта клієнта");
             return -1;
         }
         if (lines == null || lines.Count == 0)
         {
-            Console.WriteLine("Помилка: немає позицій");
+            System.Diagnostics.Debug.WriteLine("Помилка: немає позицій");
             return -1;
         }
         if (status != "New" && status != "Paid" &&
             status != "Shipped" && status != "Cancelled")
         {
-            Console.WriteLine("Помилка: невідомий стан");
+            System.Diagnostics.Debug.WriteLine("Помилка: невідомий стан");
             return -1;
         }
 
@@ -46,12 +46,12 @@ public static class LegacyProcessor
         {
             if (lines[i].Quantity <= 0)
             {
-                Console.WriteLine("Помилка: кількість");
+                System.Diagnostics.Debug.WriteLine("Помилка: кількість");
                 return -1;
             }
             if (lines[i].UnitPrice < 0)
             {
-                Console.WriteLine("Помилка: ціна");
+                System.Diagnostics.Debug.WriteLine("Помилка: ціна");
                 return -1;
             }
 
@@ -119,15 +119,15 @@ public static class LegacyProcessor
 
         if (printToConsole)
         {
-            Console.WriteLine("Документ № " + docId);
-            Console.WriteLine("Клієнт: " + clientName);
-            Console.WriteLine("Пошта: " + clientEmail);
+            System.Diagnostics.Debug.WriteLine("Документ № " + docId);
+            System.Diagnostics.Debug.WriteLine("Клієнт: " + clientName);
+            System.Diagnostics.Debug.WriteLine("Пошта: " + clientEmail);
             for (int i = 0; i < lines.Count; i++)
             {
-                Console.WriteLine(lines[i].Sku + " x " + lines[i].Quantity);
+                System.Diagnostics.Debug.WriteLine(lines[i].Sku + " x " + lines[i].Quantity);
             }
-            Console.WriteLine("Разом: " + total);
-            Console.WriteLine("Стан: " + newStatus);
+            System.Diagnostics.Debug.WriteLine("Разом: " + total);
+            System.Diagnostics.Debug.WriteLine("Стан: " + newStatus);
         }
 
         return total;

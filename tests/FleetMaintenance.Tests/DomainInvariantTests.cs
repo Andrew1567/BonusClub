@@ -4,6 +4,7 @@ using FleetMaintenance.Core.Domain;
 using FleetMaintenance.Core.Pricing;
 using FleetMaintenance.Core.Services;
 using FleetMaintenance.Core.Storage;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace FleetMaintenance.Tests;
@@ -35,12 +36,13 @@ public class DomainInvariantTests
     }
 
     [Fact]
-    public void TotalOf_WithTenPercentDiscount_Returns180()
+public void TotalOf_WithTenPercentDiscount_Returns180()
     {
         var service = new WorkOrderService(
             new InMemoryWorkOrderRepository(),
             new DiscountPricingPolicy(0.10m),
-            new NullNotifier());
+            new NullNotifier(),
+            NullLogger<WorkOrderService>.Instance); // <-- Додали тільки цей рядок
         
         var order = NewOrder(2);
         order.AddLine(new WorkLine("OIL-CHANGE", 2, 100m));

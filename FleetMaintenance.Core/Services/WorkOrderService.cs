@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using Microsoft.Extensions.Logging;
 using FleetMaintenance.Core.Abstractions;
 using FleetMaintenance.Core.Domain;
 using FleetMaintenance.Core.Errors;
@@ -13,15 +15,18 @@ public sealed class WorkOrderService
     private readonly IWorkOrderRepository _repository;
     private readonly IPricingPolicy _pricing;
     private readonly INotifier _notifier;
+    private readonly ILogger<WorkOrderService> _log;
 
     public WorkOrderService(
         IWorkOrderRepository repository, 
         IPricingPolicy pricing, 
-        INotifier notifier)
+        INotifier notifier,
+        ILogger<WorkOrderService> log)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _pricing = pricing ?? throw new ArgumentNullException(nameof(pricing));
         _notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
+        _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
     public void Place(WorkOrder order, string recipient)
@@ -48,58 +53,56 @@ public sealed class WorkOrderService
         ArgumentNullException.ThrowIfNull(line);
         
         var order = _repository.GetById(orderId)
-            ?? throw new DomainRuleException("order.exists",
-                $"Заявку {orderId} не знайдено");
+            ?? throw new DomainRuleException("order.exists", $"Заявку {orderId} не знайдено");
 
         if (order.Status != WorkOrderStatus.Draft)
-            throw new DomainRuleException("order.editable",
-                $"Стан {order.Status} не дозволяє додавати позиції");
+            throw new DomainRuleException("order.editable", $"Стан {order.Status} не дозволяє додавати позиції");
 
         order.AddLine(line);
     }
 
     public void Complete(int orderId, decimal amount)
     {
+        using var scope = _log.BeginScope("Order:{OrderId}", orderId);
+        _log.LogDebug("Початок завершення, сплачено {Amount}", amount);
+
         var order = _repository.GetById(orderId)
-            ?? throw new DomainRuleException("order.exists",
-                $"Заявку {orderId} не знайдено");
+            ?? throw new DomainRuleException("order.exists", $"Заявку {orderId} не знайдено");
 
         if (order.Status != WorkOrderStatus.InProgress)
-            throw new DomainRuleException("order.completable",
-                $"Стан {order.Status} не дозволяє завершення");
+            throw new DomainRuleException("order.completable", $"Стан {order.Status} не дозволяє завершення");
 
         decimal total = TotalOf(order);
         if (amount < total)
-            throw new DomainRuleException("order.amount",
-                $"Сплачено {amount:0.00}, треба {total:0.00}");
+            throw new DomainRuleException("order.amount", $"Сплачено {amount:0.00}, треба {total:0.00}");
+
+        if (amount > total)
+            _log.LogWarning("Переплата {Extra}", amount - total);
 
         order.Complete();
-    }
-    // АНТИПАТЕРН 1: порожній catch, дефект зникає
-    public WorkOrder? Load(int orderId)
-    {
-        try
-        {
-            return _repository.GetById(orderId);
-        }
-        catch (Exception)
-        {
-        }
-        return null;
+        _log.LogInformation("Заявку завершено на {Total}", total);
     }
 
-    // АНТИПАТЕРНИ 2 і 3: широке перехоплення, throw ex
+    // ВИПРАВЛЕНО: АНТИПАТЕРН 1 (Проковтнутий catch)
+    public WorkOrder Load(int orderId)
+    {
+        return _repository.GetById(orderId)
+            ?? throw new DomainRuleException("order.exists", $"Заявку {orderId} не знайдено");
+    }
+
+    // ВИПРАВЛЕНО: АНТИПАТЕРНИ 2 і 3 (catch Exception та throw ex)
     public void Cancel(int orderId, string reason)
     {
         try
         {
-            var order = _repository.GetById(orderId);
+            var order = _repository.GetById(orderId)
+                ?? throw new DomainRuleException("order.exists", $"Заявку {orderId} не знайдено");
             order.Cancel();
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
-            Console.WriteLine("Щось пішло не так");
-            throw ex;
+            _log.LogError(ex, "Збій сховища, {OrderId}", orderId);
+            throw; // стек збережено
         }
     }
 }

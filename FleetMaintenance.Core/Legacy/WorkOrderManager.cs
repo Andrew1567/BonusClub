@@ -43,7 +43,7 @@ public class WorkOrderManager
         foreach (var o in orders)
             text += o.Id + ";" + o.Total + ";" + o.Status;
         
-        Console.WriteLine("Звіт збережено");
+        System.Diagnostics.Debug.WriteLine("Звіт збережено");
         return text;
     }
 
