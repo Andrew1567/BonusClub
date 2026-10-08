@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 # власні винятки проєкту
 *.user
 data/*.local.json
+*.log
