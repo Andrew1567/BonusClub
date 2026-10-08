@@ -1,6 +1,7 @@
 using System;
 using FleetMaintenance.Core.Abstractions;
 using FleetMaintenance.Core.Domain;
+using FleetMaintenance.Core.Errors;
 
 namespace FleetMaintenance.Core.Services;
 
@@ -11,7 +12,7 @@ public sealed class WorkOrderService
 
     private readonly IWorkOrderRepository _repository;
     private readonly IPricingPolicy _pricing;
-    private readonly INotifier _notifier; // Нова залежність
+    private readonly INotifier _notifier;
 
     public WorkOrderService(
         IWorkOrderRepository repository, 
@@ -40,5 +41,38 @@ public sealed class WorkOrderService
             total += _pricing.PriceOf(line);
             
         return total > BonusFrom ? total - BonusAmount : total;
+    }
+
+    public void AddLine(int orderId, WorkLine line)
+    {
+        ArgumentNullException.ThrowIfNull(line);
+        
+        var order = _repository.GetById(orderId)
+            ?? throw new DomainRuleException("order.exists",
+                $"Заявку {orderId} не знайдено");
+
+        if (order.Status != WorkOrderStatus.Draft)
+            throw new DomainRuleException("order.editable",
+                $"Стан {order.Status} не дозволяє додавати позиції");
+
+        order.AddLine(line);
+    }
+
+    public void Complete(int orderId, decimal amount)
+    {
+        var order = _repository.GetById(orderId)
+            ?? throw new DomainRuleException("order.exists",
+                $"Заявку {orderId} не знайдено");
+
+        if (order.Status != WorkOrderStatus.InProgress)
+            throw new DomainRuleException("order.completable",
+                $"Стан {order.Status} не дозволяє завершення");
+
+        decimal total = TotalOf(order);
+        if (amount < total)
+            throw new DomainRuleException("order.amount",
+                $"Сплачено {amount:0.00}, треба {total:0.00}");
+
+        order.Complete();
     }
 }
