@@ -75,4 +75,31 @@ public sealed class WorkOrderService
 
         order.Complete();
     }
+    // АНТИПАТЕРН 1: порожній catch, дефект зникає
+    public WorkOrder? Load(int orderId)
+    {
+        try
+        {
+            return _repository.GetById(orderId);
+        }
+        catch (Exception)
+        {
+        }
+        return null;
+    }
+
+    // АНТИПАТЕРНИ 2 і 3: широке перехоплення, throw ex
+    public void Cancel(int orderId, string reason)
+    {
+        try
+        {
+            var order = _repository.GetById(orderId);
+            order.Cancel();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Щось пішло не так");
+            throw ex;
+        }
+    }
 }
