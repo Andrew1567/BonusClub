@@ -14,7 +14,6 @@ public class FleetCustomer
     public int DoneCount;
     public DateTime SinceUtc;
 
-    // РЕФАКТОРИНГ (Дефект 8): Перемістили метод сюди (Move Method)
     public string Describe()
     {
         var sb = new StringBuilder();
@@ -103,22 +102,16 @@ public class LegacyMaintenanceProcessor
 
     private decimal CalculateDiscount(string kind, int doneCount, decimal subtotal)
     {
-        decimal discount = 0m;
-        if (kind == "vip")
+        // РЕФАКТОРИНГ (Фінал): Сучасний switch expression та Math.Min
+        decimal discount = kind switch
         {
-            discount = subtotal * VipDiscountRate;
-        }
-        else if (kind == "staff")
-        {
-            discount = subtotal * StaffDiscountRate;
-        }
-        else if (doneCount > 10)
-        {
-            discount = subtotal * LoyalDiscountRate;
-        }
+            "vip" => subtotal * VipDiscountRate,
+            "staff" => subtotal * StaffDiscountRate,
+            _ when doneCount > 10 => subtotal * LoyalDiscountRate,
+            _ => 0m
+        };
 
-        if (discount > MaxDiscountLimit) discount = MaxDiscountLimit;
-        return discount;
+        return Math.Min(discount, MaxDiscountLimit);
     }
 
     private decimal CalculateShipping(decimal subtotal, decimal discount)
