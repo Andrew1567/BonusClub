@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text; // ДОДАНО: простір імен для StringBuilder
 
 namespace FleetMaintenance.LegacyModule;
 
@@ -43,40 +44,40 @@ public class LegacyMaintenanceProcessor
 
         _log.Add("ok " + docId);
 
-        // РЕФАКТОРИНГ (Дефект 5): Використовуємо виділені методи
         decimal tmpSum = CalculateSubtotal(items);
         decimal tmpDiscount = CalculateDiscount(customer.Kind, customer.DoneCount, tmpSum);
         decimal ship = CalculateShipping(tmpSum, tmpDiscount);
         decimal total = tmpSum - tmpDiscount + ship;
 
-        string txt = "Документ #" + docId + "\n";
-        txt += "Клієнт: " + customer.Name + "\n";
-        for (int i = 0; i < items.Count; i++)
+        // РЕФАКТОРИНГ (Дефект 6): Використання StringBuilder
+        var sb = new StringBuilder();
+        sb.Append($"Документ #{docId}\n");
+        sb.Append($"Клієнт: {customer.Name}\n");
+        
+        foreach (var item in items)
         {
-            txt += items[i].Code + " x" + items[i].Qty + " = " +
-                   (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
+            sb.Append($"{item.Code} x{item.Qty} = {(item.Qty * item.Price).ToString("0.00")} {currency}\n");
         }
-        txt += "Знижка: " + tmpDiscount.ToString("0.00") + " " + currency + "\n";
-        txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
-        txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
+        
+        sb.Append($"Знижка: {tmpDiscount.ToString("0.00")} {currency}\n");
+        sb.Append($"Доставка: {ship.ToString("0.00")} {currency}\n");
+        sb.Append($"Разом: {total.ToString("0.00")} {currency}\n");
 
         if (sendMail)
         {
             _log.Add("mail -> " + customer.Email);
         }
-        return txt;
+        
+        return sb.ToString();
     }
 
     public decimal Preview(string clientKind, int clientDone, List<ServiceLine> items)
     {
-        // РЕФАКТОРИНГ (Дефект 5): Використовуємо виділені методи
         decimal s = CalculateSubtotal(items);
         decimal d = CalculateDiscount(clientKind, clientDone, s);
         decimal sh = CalculateShipping(s, d);
         return s - d + sh;
     }
-
-    // --- НОВІ ПРИВАТНІ МЕТОДИ (Extract Method) ---
 
     private decimal CalculateSubtotal(List<ServiceLine> items)
     {
@@ -114,23 +115,31 @@ public class LegacyMaintenanceProcessor
         return 0m;
     }
 
-    // ----------------------------------------------
-
     public string DescribeClient(FleetCustomer c)
     {
-        string s = c.Name.Trim().ToUpper();
-        if (c.Kind == "vip") s += " [VIP]";
-        if (c.DoneCount > 10) s += " [ЛОЯЛЬНИЙ]";
-        s += " <" + c.Email.ToLower() + ">";
+        // РЕФАКТОРИНГ (Дефект 6): Використання StringBuilder
+        var sb = new StringBuilder();
+        sb.Append(c.Name.Trim().ToUpper());
+        
+        if (c.Kind == "vip") sb.Append(" [VIP]");
+        if (c.DoneCount > 10) sb.Append(" [ЛОЯЛЬНИЙ]");
+        
+        sb.Append($" <{c.Email.ToLower()}>");
+        
         int years = DateTime.Now.Year - c.SinceUtc.Year;
-        s += " стаж " + years;
-        return s;
+        sb.Append($" стаж {years}");
+        
+        return sb.ToString();
     }
 
     public string DumpLog()
     {
-        string r = "";
-        foreach (var l in _log) r += l + "\n";
-        return r;
+        // РЕФАКТОРИНГ (Дефект 6): Використання StringBuilder
+        var sb = new StringBuilder();
+        foreach (var l in _log) 
+        {
+            sb.Append(l).Append('\n');
+        }
+        return sb.ToString();
     }
 }
