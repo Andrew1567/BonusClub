@@ -23,7 +23,14 @@ public class ServiceLine
 
 public class LegacyMaintenanceProcessor
 {
-    // РЕФАКТОРИНГ (Дефект 3): Видалили тимчасові поля класу _tmpSum та _tmpDiscount
+    // РЕФАКТОРИНГ (Дефект 4): Заміна магічних чисел на зрозумілі константи
+    private const decimal VipDiscountRate = 0.15m;
+    private const decimal StaffDiscountRate = 0.30m;
+    private const decimal LoyalDiscountRate = 0.05m;
+    private const decimal MaxDiscountLimit = 500m;
+    private const decimal FreeShippingThreshold = 1000m;
+    private const decimal StandardShippingCost = 60m;
+
     private readonly List<string> _log = new();
 
     public string Handle(int docId, FleetCustomer customer, 
@@ -37,33 +44,31 @@ public class LegacyMaintenanceProcessor
 
         _log.Add("ok " + docId);
 
-        // РЕФАКТОРИНГ: Зробили tmpSum локальною змінною
         decimal tmpSum = 0m;
         for (int i = 0; i < items.Count; i++)
         {
             tmpSum += items[i].Qty * items[i].Price;
         }
 
-        // РЕФАКТОРИНГ: Зробили tmpDiscount локальною змінною
         decimal tmpDiscount = 0m;
         if (customer.Kind == "vip")
         {
-            tmpDiscount = tmpSum * 0.15m;
-            if (tmpDiscount > 500m) tmpDiscount = 500m;
+            tmpDiscount = tmpSum * VipDiscountRate;
+            if (tmpDiscount > MaxDiscountLimit) tmpDiscount = MaxDiscountLimit;
         }
         else if (customer.Kind == "staff")
         {
-            tmpDiscount = tmpSum * 0.30m;
-            if (tmpDiscount > 500m) tmpDiscount = 500m;
+            tmpDiscount = tmpSum * StaffDiscountRate;
+            if (tmpDiscount > MaxDiscountLimit) tmpDiscount = MaxDiscountLimit;
         }
         else if (customer.DoneCount > 10)
         {
-            tmpDiscount = tmpSum * 0.05m;
-            if (tmpDiscount > 500m) tmpDiscount = 500m;
+            tmpDiscount = tmpSum * LoyalDiscountRate;
+            if (tmpDiscount > MaxDiscountLimit) tmpDiscount = MaxDiscountLimit;
         }
 
         decimal ship = 0m;
-        if (tmpSum - tmpDiscount < 1000m) ship = 60m;
+        if (tmpSum - tmpDiscount < FreeShippingThreshold) ship = StandardShippingCost;
 
         decimal total = tmpSum - tmpDiscount + ship;
 
@@ -96,22 +101,22 @@ public class LegacyMaintenanceProcessor
         decimal d = 0m;
         if (clientKind == "vip")
         {
-            d = s * 0.15m;
-            if (d > 500m) d = 500m;
+            d = s * VipDiscountRate;
+            if (d > MaxDiscountLimit) d = MaxDiscountLimit;
         }
         else if (clientKind == "staff")
         {
-            d = s * 0.30m;
-            if (d > 500m) d = 500m;
+            d = s * StaffDiscountRate;
+            if (d > MaxDiscountLimit) d = MaxDiscountLimit;
         }
         else if (clientDone > 10)
         {
-            d = s * 0.05m;
-            if (d > 500m) d = 500m;
+            d = s * LoyalDiscountRate;
+            if (d > MaxDiscountLimit) d = MaxDiscountLimit;
         }
 
         decimal sh = 0m;
-        if (s - d < 1000m) sh = 60m;
+        if (s - d < FreeShippingThreshold) sh = StandardShippingCost;
         return s - d + sh;
     }
 
