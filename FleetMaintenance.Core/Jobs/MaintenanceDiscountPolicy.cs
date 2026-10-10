@@ -15,20 +15,23 @@ public sealed class MaintenanceDiscountPolicy
 
     public decimal DiscountFor(decimal amount, bool isRegular)
     {
+        EnsureAmountIsValid(amount);
+        decimal raw = amount * RateFor(amount, isRegular);
+        return Math.Min(decimal.Round(raw, 2), MaxDiscount);
+    }
+
+    private static void EnsureAmountIsValid(decimal amount)
+    {
         if (amount < 0m)
             throw new ArgumentOutOfRangeException(
                 nameof(amount), "Сума не може бути від’ємною.");
+    }
 
-        decimal rate = 0m;
-        if (isRegular)
-            rate += RegularRate;
+    private static decimal RateFor(decimal amount, bool isRegular)
+    {
+        decimal rate = isRegular ? RegularRate : 0m;
         if (amount >= BigOrderFrom)
             rate += BigOrderRate;
-
-        decimal discount = decimal.Round(amount * rate, 2);
-        if (discount > MaxDiscount)
-            discount = MaxDiscount;
-        
-        return discount;
+        return rate;
     }
 }
