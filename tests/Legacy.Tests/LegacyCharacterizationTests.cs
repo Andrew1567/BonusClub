@@ -95,7 +95,8 @@ public class LegacyCharacterizationTests
         var years = DateTime.Now.Year - 2020;
         var expected = "ІВАН [VIP] [ЛОЯЛЬНИЙ] <ivan@mail.com> стаж " + years;
 
-        var actual = new LegacyMaintenanceProcessor().DescribeClient(c);
+        // РЕФАКТОРИНГ: Тепер викликаємо метод безпосередньо у об'єкта клієнта!
+        var actual = c.Describe();
         Assert.Equal(expected, actual);
     }
 

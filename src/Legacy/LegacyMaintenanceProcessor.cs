@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq; // ДОДАНО: простір імен для LINQ
+using System.Linq;
 using System.Text;
 
 namespace FleetMaintenance.LegacyModule;
@@ -13,6 +13,23 @@ public class FleetCustomer
     public string Kind = "regular";
     public int DoneCount;
     public DateTime SinceUtc;
+
+    // РЕФАКТОРИНГ (Дефект 8): Перемістили метод сюди (Move Method)
+    public string Describe()
+    {
+        var sb = new StringBuilder();
+        sb.Append(Name.Trim().ToUpper());
+        
+        if (Kind == "vip") sb.Append(" [VIP]");
+        if (DoneCount > 10) sb.Append(" [ЛОЯЛЬНИЙ]");
+        
+        sb.Append($" <{Email.ToLower()}>");
+        
+        int years = DateTime.Now.Year - SinceUtc.Year;
+        sb.Append($" стаж {years}");
+        
+        return sb.ToString();
+    }
 }
 
 public class ServiceLine
@@ -45,10 +62,10 @@ public class LegacyMaintenanceProcessor
 
         _log.Add("ok " + docId);
 
-        decimal tmpSum = CalculateSubtotal(items);
-        decimal tmpDiscount = CalculateDiscount(customer.Kind, customer.DoneCount, tmpSum);
-        decimal ship = CalculateShipping(tmpSum, tmpDiscount);
-        decimal total = tmpSum - tmpDiscount + ship;
+        decimal subtotal = CalculateSubtotal(items);
+        decimal discount = CalculateDiscount(customer.Kind, customer.DoneCount, subtotal);
+        decimal shipping = CalculateShipping(subtotal, discount);
+        decimal total = subtotal - discount + shipping;
 
         var sb = new StringBuilder();
         sb.Append($"Документ #{docId}\n");
@@ -59,8 +76,8 @@ public class LegacyMaintenanceProcessor
             sb.Append($"{item.Code} x{item.Qty} = {(item.Qty * item.Price).ToString("0.00")} {currency}\n");
         }
         
-        sb.Append($"Знижка: {tmpDiscount.ToString("0.00")} {currency}\n");
-        sb.Append($"Доставка: {ship.ToString("0.00")} {currency}\n");
+        sb.Append($"Знижка: {discount.ToString("0.00")} {currency}\n");
+        sb.Append($"Доставка: {shipping.ToString("0.00")} {currency}\n");
         sb.Append($"Разом: {total.ToString("0.00")} {currency}\n");
 
         if (sendMail)
@@ -73,7 +90,6 @@ public class LegacyMaintenanceProcessor
 
     public decimal Preview(string clientKind, int clientDone, List<ServiceLine> items)
     {
-        // РЕФАКТОРИНГ (Дефект 7): Змінили назви s, d, sh на зрозумілі (Rename Variable)
         decimal subtotal = CalculateSubtotal(items);
         decimal discount = CalculateDiscount(clientKind, clientDone, subtotal);
         decimal shipping = CalculateShipping(subtotal, discount);
@@ -82,7 +98,6 @@ public class LegacyMaintenanceProcessor
 
     private decimal CalculateSubtotal(List<ServiceLine> items)
     {
-        // РЕФАКТОРИНГ (Дефект 7): Замінили foreach на конвеєр LINQ (Replace Loop with Pipeline)
         return items.Sum(item => item.Qty * item.Price);
     }
 
@@ -110,22 +125,6 @@ public class LegacyMaintenanceProcessor
     {
         if (subtotal - discount < FreeShippingThreshold) return StandardShippingCost;
         return 0m;
-    }
-
-    public string DescribeClient(FleetCustomer c)
-    {
-        var sb = new StringBuilder();
-        sb.Append(c.Name.Trim().ToUpper());
-        
-        if (c.Kind == "vip") sb.Append(" [VIP]");
-        if (c.DoneCount > 10) sb.Append(" [ЛОЯЛЬНИЙ]");
-        
-        sb.Append($" <{c.Email.ToLower()}>");
-        
-        int years = DateTime.Now.Year - c.SinceUtc.Year;
-        sb.Append($" стаж {years}");
-        
-        return sb.ToString();
     }
 
     public string DumpLog()
