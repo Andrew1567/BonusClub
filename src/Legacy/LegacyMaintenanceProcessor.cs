@@ -27,11 +27,11 @@ public class LegacyMaintenanceProcessor
     private decimal _tmpDiscount;
     private readonly List<string> _log = new();
 
-    public string Handle(int docId, int clientId,
-        string clientName, string? clientMail,
-        string clientKind, int clientDone,
-        List<ServiceLine>? items, string state,
-        string currency, DateTime createdAt, bool sendMail)
+    // РЕФАКТОРИНГ: Замінили 6 параметрів клієнта на один об'єкт FleetCustomer
+    // РЕФАКТОРИНГ: Видалили мертвий параметр createdAt
+    public string Handle(int docId, FleetCustomer customer, 
+        List<ServiceLine>? items, string state, 
+        string currency, bool sendMail)
     {
         if (items != null)
         {
@@ -39,7 +39,7 @@ public class LegacyMaintenanceProcessor
             {
                 if (state == "new" || state == "paid")
                 {
-                    if (clientMail != null && clientMail.Contains("@"))
+                    if (customer.Email != null && customer.Email.Contains("@"))
                     {
                         _log.Add("ok " + docId);
                     }
@@ -58,17 +58,17 @@ public class LegacyMaintenanceProcessor
         }
 
         _tmpDiscount = 0m;
-        if (clientKind == "vip")
+        if (customer.Kind == "vip")
         {
             _tmpDiscount = _tmpSum * 0.15m;
             if (_tmpDiscount > 500m) _tmpDiscount = 500m;
         }
-        else if (clientKind == "staff")
+        else if (customer.Kind == "staff")
         {
             _tmpDiscount = _tmpSum * 0.30m;
             if (_tmpDiscount > 500m) _tmpDiscount = 500m;
         }
-        else if (clientDone > 10)
+        else if (customer.DoneCount > 10)
         {
             _tmpDiscount = _tmpSum * 0.05m;
             if (_tmpDiscount > 500m) _tmpDiscount = 500m;
@@ -80,7 +80,7 @@ public class LegacyMaintenanceProcessor
         decimal total = _tmpSum - _tmpDiscount + ship;
 
         string txt = "Документ #" + docId + "\n";
-        txt += "Клієнт: " + clientName + "\n";
+        txt += "Клієнт: " + customer.Name + "\n";
         for (int i = 0; i < items.Count; i++)
         {
             txt += items[i].Code + " x" + items[i].Qty + " = " +
@@ -92,7 +92,7 @@ public class LegacyMaintenanceProcessor
 
         if (sendMail)
         {
-            _log.Add("mail -> " + clientMail);
+            _log.Add("mail -> " + customer.Email);
         }
         return txt;
     }

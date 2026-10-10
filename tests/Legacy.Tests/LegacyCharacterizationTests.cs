@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
-using FleetMaintenance.LegacyModule; // <--- Ось цей рядок бачить ServiceLine!
+using FleetMaintenance.LegacyModule;
 
 namespace FleetMaintenance.LegacyModule.Tests;
 
@@ -34,8 +34,9 @@ public class LegacyCharacterizationTests
             _ => null
         };
         var sut = new LegacyMaintenanceProcessor();
-        var actual = sut.Handle(1001, 7, "Іван", mail, "regular", 0,
-            items, state, "UAH", new DateTime(2026, 3, 1), false);
+        var customer = new FleetCustomer { Id = 7, Name = "Іван", Email = mail, Kind = "regular", DoneCount = 0 };
+        
+        var actual = sut.Handle(1001, customer, items, state, "UAH", false);
         Assert.Equal(expected, actual);
     }
 
@@ -43,9 +44,9 @@ public class LegacyCharacterizationTests
     public void Handle_VipOrder_ReturnsExactReport()
     {
         var sut = new LegacyMaintenanceProcessor();
-        var report = sut.Handle(1001, 7, "Іван", "a@b.c",
-            "vip", 3, TwoLines(), "new", "UAH",
-            new DateTime(2026, 3, 1), false);
+        var customer = new FleetCustomer { Id = 7, Name = "Іван", Email = "a@b.c", Kind = "vip", DoneCount = 3 };
+        
+        var report = sut.Handle(1001, customer, TwoLines(), "new", "UAH", false);
 
         var expected =
             "Документ #1001\n" +
@@ -102,7 +103,9 @@ public class LegacyCharacterizationTests
     public void DumpLog_WithLogs_ReturnsNewlineSeparatedString()
     {
         var sut = new LegacyMaintenanceProcessor();
-        sut.Handle(1001, 7, "Іван", "a@b.c", "regular", 0, TwoLines(), "new", "UAH", DateTime.Now, true);
+        var customer = new FleetCustomer { Id = 7, Name = "Іван", Email = "a@b.c", Kind = "regular", DoneCount = 0 };
+        
+        sut.Handle(1001, customer, TwoLines(), "new", "UAH", true);
         
         var expected = "ok 1001\nmail -> a@b.c\n";
         var actual = sut.DumpLog();
