@@ -64,6 +64,7 @@ dotnet_diagnostic.SA1516.severity = suggestion
 # Отключение конфликтующих правил для старого кода и тестов
 dotnet_diagnostic.CA1051.severity = none
 dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1873.severity = none
 dotnet_diagnostic.SA1515.severity = none
 dotnet_diagnostic.CA1000.severity = none
 dotnet_diagnostic.SA1128.severity = none
