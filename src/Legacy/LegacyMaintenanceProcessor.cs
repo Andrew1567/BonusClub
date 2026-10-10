@@ -23,15 +23,13 @@ public class ServiceLine
 
 public class LegacyMaintenanceProcessor
 {
-    private decimal _tmpSum;
-    private decimal _tmpDiscount;
+    // РЕФАКТОРИНГ (Дефект 3): Видалили тимчасові поля класу _tmpSum та _tmpDiscount
     private readonly List<string> _log = new();
 
     public string Handle(int docId, FleetCustomer customer, 
         List<ServiceLine>? items, string state, 
         string currency, bool sendMail)
     {
-        // РЕФАКТОРИНГ (Дефект 2): Охоронні вирази (Guard Clauses) замість вкладених if
         if (items == null) return "ERR: null";
         if (items.Count == 0) return "ERR: empty";
         if (state != "new" && state != "paid") return "ERR: state";
@@ -39,33 +37,35 @@ public class LegacyMaintenanceProcessor
 
         _log.Add("ok " + docId);
 
-        _tmpSum = 0m;
+        // РЕФАКТОРИНГ: Зробили tmpSum локальною змінною
+        decimal tmpSum = 0m;
         for (int i = 0; i < items.Count; i++)
         {
-            _tmpSum += items[i].Qty * items[i].Price;
+            tmpSum += items[i].Qty * items[i].Price;
         }
 
-        _tmpDiscount = 0m;
+        // РЕФАКТОРИНГ: Зробили tmpDiscount локальною змінною
+        decimal tmpDiscount = 0m;
         if (customer.Kind == "vip")
         {
-            _tmpDiscount = _tmpSum * 0.15m;
-            if (_tmpDiscount > 500m) _tmpDiscount = 500m;
+            tmpDiscount = tmpSum * 0.15m;
+            if (tmpDiscount > 500m) tmpDiscount = 500m;
         }
         else if (customer.Kind == "staff")
         {
-            _tmpDiscount = _tmpSum * 0.30m;
-            if (_tmpDiscount > 500m) _tmpDiscount = 500m;
+            tmpDiscount = tmpSum * 0.30m;
+            if (tmpDiscount > 500m) tmpDiscount = 500m;
         }
         else if (customer.DoneCount > 10)
         {
-            _tmpDiscount = _tmpSum * 0.05m;
-            if (_tmpDiscount > 500m) _tmpDiscount = 500m;
+            tmpDiscount = tmpSum * 0.05m;
+            if (tmpDiscount > 500m) tmpDiscount = 500m;
         }
 
         decimal ship = 0m;
-        if (_tmpSum - _tmpDiscount < 1000m) ship = 60m;
+        if (tmpSum - tmpDiscount < 1000m) ship = 60m;
 
-        decimal total = _tmpSum - _tmpDiscount + ship;
+        decimal total = tmpSum - tmpDiscount + ship;
 
         string txt = "Документ #" + docId + "\n";
         txt += "Клієнт: " + customer.Name + "\n";
@@ -74,7 +74,7 @@ public class LegacyMaintenanceProcessor
             txt += items[i].Code + " x" + items[i].Qty + " = " +
                    (items[i].Qty * items[i].Price).ToString("0.00") + " " + currency + "\n";
         }
-        txt += "Знижка: " + _tmpDiscount.ToString("0.00") + " " + currency + "\n";
+        txt += "Знижка: " + tmpDiscount.ToString("0.00") + " " + currency + "\n";
         txt += "Доставка: " + ship.ToString("0.00") + " " + currency + "\n";
         txt += "Разом: " + total.ToString("0.00") + " " + currency + "\n";
 
