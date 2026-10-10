@@ -35,4 +35,15 @@ public class MaintenanceDiscountPolicyTests
 
         Assert.Equal("amount", ex.ParamName);
     }
+    [Fact]
+    public void DiscountFor_HugeOrder_IsCappedAtMax()
+    {
+        var policy = new MaintenanceDiscountPolicy();
+
+        // Замовлення на 5000 грн для постійного клієнта дало б 750 грн знижки,
+        // але ми очікуємо, що спрацює стеля і знижка буде лише 150 грн.
+        decimal actual = policy.DiscountFor(5000m, true);
+
+        Assert.Equal(150m, actual);
+    }
 }
