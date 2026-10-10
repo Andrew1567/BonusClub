@@ -23,7 +23,6 @@ public class ServiceLine
 
 public class LegacyMaintenanceProcessor
 {
-    // РЕФАКТОРИНГ (Дефект 4): Заміна магічних чисел на зрозумілі константи
     private const decimal VipDiscountRate = 0.15m;
     private const decimal StaffDiscountRate = 0.30m;
     private const decimal LoyalDiscountRate = 0.05m;
@@ -44,32 +43,10 @@ public class LegacyMaintenanceProcessor
 
         _log.Add("ok " + docId);
 
-        decimal tmpSum = 0m;
-        for (int i = 0; i < items.Count; i++)
-        {
-            tmpSum += items[i].Qty * items[i].Price;
-        }
-
-        decimal tmpDiscount = 0m;
-        if (customer.Kind == "vip")
-        {
-            tmpDiscount = tmpSum * VipDiscountRate;
-            if (tmpDiscount > MaxDiscountLimit) tmpDiscount = MaxDiscountLimit;
-        }
-        else if (customer.Kind == "staff")
-        {
-            tmpDiscount = tmpSum * StaffDiscountRate;
-            if (tmpDiscount > MaxDiscountLimit) tmpDiscount = MaxDiscountLimit;
-        }
-        else if (customer.DoneCount > 10)
-        {
-            tmpDiscount = tmpSum * LoyalDiscountRate;
-            if (tmpDiscount > MaxDiscountLimit) tmpDiscount = MaxDiscountLimit;
-        }
-
-        decimal ship = 0m;
-        if (tmpSum - tmpDiscount < FreeShippingThreshold) ship = StandardShippingCost;
-
+        // РЕФАКТОРИНГ (Дефект 5): Використовуємо виділені методи
+        decimal tmpSum = CalculateSubtotal(items);
+        decimal tmpDiscount = CalculateDiscount(customer.Kind, customer.DoneCount, tmpSum);
+        decimal ship = CalculateShipping(tmpSum, tmpDiscount);
         decimal total = tmpSum - tmpDiscount + ship;
 
         string txt = "Документ #" + docId + "\n";
@@ -92,33 +69,52 @@ public class LegacyMaintenanceProcessor
 
     public decimal Preview(string clientKind, int clientDone, List<ServiceLine> items)
     {
-        decimal s = 0m;
-        foreach (var it in items)
-        {
-            s += it.Qty * it.Price;
-        }
-
-        decimal d = 0m;
-        if (clientKind == "vip")
-        {
-            d = s * VipDiscountRate;
-            if (d > MaxDiscountLimit) d = MaxDiscountLimit;
-        }
-        else if (clientKind == "staff")
-        {
-            d = s * StaffDiscountRate;
-            if (d > MaxDiscountLimit) d = MaxDiscountLimit;
-        }
-        else if (clientDone > 10)
-        {
-            d = s * LoyalDiscountRate;
-            if (d > MaxDiscountLimit) d = MaxDiscountLimit;
-        }
-
-        decimal sh = 0m;
-        if (s - d < FreeShippingThreshold) sh = StandardShippingCost;
+        // РЕФАКТОРИНГ (Дефект 5): Використовуємо виділені методи
+        decimal s = CalculateSubtotal(items);
+        decimal d = CalculateDiscount(clientKind, clientDone, s);
+        decimal sh = CalculateShipping(s, d);
         return s - d + sh;
     }
+
+    // --- НОВІ ПРИВАТНІ МЕТОДИ (Extract Method) ---
+
+    private decimal CalculateSubtotal(List<ServiceLine> items)
+    {
+        decimal sum = 0m;
+        foreach (var it in items)
+        {
+            sum += it.Qty * it.Price;
+        }
+        return sum;
+    }
+
+    private decimal CalculateDiscount(string kind, int doneCount, decimal subtotal)
+    {
+        decimal discount = 0m;
+        if (kind == "vip")
+        {
+            discount = subtotal * VipDiscountRate;
+        }
+        else if (kind == "staff")
+        {
+            discount = subtotal * StaffDiscountRate;
+        }
+        else if (doneCount > 10)
+        {
+            discount = subtotal * LoyalDiscountRate;
+        }
+
+        if (discount > MaxDiscountLimit) discount = MaxDiscountLimit;
+        return discount;
+    }
+
+    private decimal CalculateShipping(decimal subtotal, decimal discount)
+    {
+        if (subtotal - discount < FreeShippingThreshold) return StandardShippingCost;
+        return 0m;
+    }
+
+    // ----------------------------------------------
 
     public string DescribeClient(FleetCustomer c)
     {
