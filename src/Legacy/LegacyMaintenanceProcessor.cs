@@ -27,29 +27,17 @@ public class LegacyMaintenanceProcessor
     private decimal _tmpDiscount;
     private readonly List<string> _log = new();
 
-    // РЕФАКТОРИНГ: Замінили 6 параметрів клієнта на один об'єкт FleetCustomer
-    // РЕФАКТОРИНГ: Видалили мертвий параметр createdAt
     public string Handle(int docId, FleetCustomer customer, 
         List<ServiceLine>? items, string state, 
         string currency, bool sendMail)
     {
-        if (items != null)
-        {
-            if (items.Count > 0)
-            {
-                if (state == "new" || state == "paid")
-                {
-                    if (customer.Email != null && customer.Email.Contains("@"))
-                    {
-                        _log.Add("ok " + docId);
-                    }
-                    else { return "ERR: mail"; }
-                }
-                else { return "ERR: state"; }
-            }
-            else { return "ERR: empty"; }
-        }
-        else { return "ERR: null"; }
+        // РЕФАКТОРИНГ (Дефект 2): Охоронні вирази (Guard Clauses) замість вкладених if
+        if (items == null) return "ERR: null";
+        if (items.Count == 0) return "ERR: empty";
+        if (state != "new" && state != "paid") return "ERR: state";
+        if (customer.Email == null || !customer.Email.Contains("@")) return "ERR: mail";
+
+        _log.Add("ok " + docId);
 
         _tmpSum = 0m;
         for (int i = 0; i < items.Count; i++)
