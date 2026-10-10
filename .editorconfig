@@ -56,3 +56,18 @@ dotnet_diagnostic.CA1512.severity = none
 dotnet_diagnostic.CA1716.severity = none
 dotnet_diagnostic.CA1852.severity = none
 dotnet_diagnostic.CA1707.severity = none
+# Требования для ЛР 8
+dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.SA1516.severity = suggestion
+
+# Отключение конфликтующих правил для старого кода и тестов
+dotnet_diagnostic.CA1051.severity = none
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.SA1515.severity = none
+dotnet_diagnostic.CA1000.severity = none
+dotnet_diagnostic.SA1128.severity = none
+dotnet_diagnostic.CA1304.severity = none
+dotnet_diagnostic.CA1311.severity = none
+dotnet_diagnostic.CA1847.severity = none
+dotnet_diagnostic.SA1210.severity = none

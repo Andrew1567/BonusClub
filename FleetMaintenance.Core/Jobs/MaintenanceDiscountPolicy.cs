@@ -23,15 +23,20 @@ public sealed class MaintenanceDiscountPolicy
     private static void EnsureAmountIsValid(decimal amount)
     {
         if (amount < 0m)
+        {
             throw new ArgumentOutOfRangeException(
                 nameof(amount), "Сума не може бути від’ємною.");
+        }
     }
 
     private static decimal RateFor(decimal amount, bool isRegular)
     {
         decimal rate = isRegular ? RegularRate : 0m;
         if (amount >= BigOrderFrom)
+        {
             rate += BigOrderRate;
+        }
+
         return rate;
     }
 }

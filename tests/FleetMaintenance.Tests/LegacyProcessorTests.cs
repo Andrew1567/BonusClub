@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using FleetMaintenance.Core.Legacy;
-using FleetMaintenance.Core.Documents;
-using Xunit;
 using System.IO;
+using FleetMaintenance.Core.Documents;
+using FleetMaintenance.Core.Legacy;
 using FleetMaintenance.Core.Reporting;
+using Xunit;
 
 namespace FleetMaintenance.Tests;
 
@@ -65,7 +65,9 @@ public class LegacyProcessorTests
     {
         OrderLine line = new()
         {
-            Sku = "A1", Quantity = 0, UnitPrice = 10m
+            Sku = "A1",
+            Quantity = 0,
+            UnitPrice = 10m
         };
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>

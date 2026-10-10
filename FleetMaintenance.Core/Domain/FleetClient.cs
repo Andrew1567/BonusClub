@@ -5,12 +5,20 @@ public sealed record FleetClient
     public FleetClient(int id, string name, string email)
     {
         if (id <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(id));
+        }
+
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new ArgumentException("Порожнє ім’я", nameof(name));
+        }
+
         if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+        {
             throw new ArgumentException(
                 "Пошта має містити символ @", nameof(email));
+        }
 
         Id = id;
         Name = name;

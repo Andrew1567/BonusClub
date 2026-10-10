@@ -11,7 +11,10 @@ public sealed class DiscountPricingPolicy : IPricingPolicy
     public DiscountPricingPolicy(decimal rate)
     {
         if (rate < 0m || rate > 0.5m)
+        {
             throw new ArgumentOutOfRangeException(nameof(rate));
+        }
+
         _rate = rate;
     }
 

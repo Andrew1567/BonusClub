@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Xunit;
 using FleetMaintenance.LegacyModule;
+using Xunit;
 
 namespace FleetMaintenance.LegacyModule.Tests;
 
@@ -35,7 +35,7 @@ public class LegacyCharacterizationTests
         };
         var sut = new LegacyMaintenanceProcessor();
         var customer = new FleetCustomer { Id = 7, Name = "Іван", Email = mail, Kind = "regular", DoneCount = 0 };
-        
+
         var actual = sut.Handle(1001, customer, items, state, "UAH", false);
         Assert.Equal(expected, actual);
     }
@@ -45,7 +45,7 @@ public class LegacyCharacterizationTests
     {
         var sut = new LegacyMaintenanceProcessor();
         var customer = new FleetCustomer { Id = 7, Name = "Іван", Email = "a@b.c", Kind = "vip", DoneCount = 3 };
-        
+
         var report = sut.Handle(1001, customer, TwoLines(), "new", "UAH", false);
 
         var expected =
@@ -105,9 +105,9 @@ public class LegacyCharacterizationTests
     {
         var sut = new LegacyMaintenanceProcessor();
         var customer = new FleetCustomer { Id = 7, Name = "Іван", Email = "a@b.c", Kind = "regular", DoneCount = 0 };
-        
+
         sut.Handle(1001, customer, TwoLines(), "new", "UAH", true);
-        
+
         var expected = "ok 1001\nmail -> a@b.c\n";
         var actual = sut.DumpLog();
         Assert.Equal(expected, actual);

@@ -32,9 +32,15 @@ public static class DocumentTotalCalculator
     {
         ArgumentOutOfRangeException.ThrowIfNegative(amount);
         if (amount > PricingRules.LargeOrderFrom)
+        {
             return amount * PricingRules.LargeOrderRate;
+        }
+
         if (amount > PricingRules.MediumOrderFrom)
+        {
             return amount * PricingRules.MediumOrderRate;
+        }
+
         return 0m;
     }
 
@@ -80,8 +86,8 @@ public static class DocumentTotalCalculator
         total -= WeekendDiscountOf(total, request.CreatedAt);
         total += DeliveryFeeOf(total, request.DeliveryPrice);
 
-        total = request.Status == DocumentStatus.Cancelled 
-            ? 0m 
+        total = request.Status == DocumentStatus.Cancelled
+            ? 0m
             : Math.Round(Math.Max(total, 0m), 2);
 
         return new TotalResult(total, NextStatusOf(request.Status, total));

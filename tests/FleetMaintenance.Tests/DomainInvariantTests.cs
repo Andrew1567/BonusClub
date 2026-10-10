@@ -36,14 +36,14 @@ public class DomainInvariantTests
     }
 
     [Fact]
-public void TotalOf_WithTenPercentDiscount_Returns180()
+    public void TotalOf_WithTenPercentDiscount_Returns180()
     {
         var service = new WorkOrderService(
             new InMemoryWorkOrderRepository(),
             new DiscountPricingPolicy(0.10m),
             new NullNotifier(),
             NullLogger<WorkOrderService>.Instance); // <-- Додали тільки цей рядок
-        
+
         var order = NewOrder(2);
         order.AddLine(new WorkLine("OIL-CHANGE", 2, 100m));
 

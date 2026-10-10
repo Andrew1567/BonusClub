@@ -14,7 +14,9 @@ public sealed class InMemoryWorkOrderRepository : IWorkOrderRepository
     {
         ArgumentNullException.ThrowIfNull(order);
         if (!_items.TryAdd(order.Id, order))
+        {
             throw new InvalidOperationException($"Заявка {order.Id} уже існує");
+        }
     }
 
     public WorkOrder? GetById(int id) => _items.GetValueOrDefault(id);

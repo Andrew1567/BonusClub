@@ -10,7 +10,6 @@
     <VersionPrefix>0.8.0</VersionPrefix>
     <Authors>Скринник Андрій</Authors>
     <Product>FleetMaintenance</Product>
-    <NuGetAudit>true</NuGetAudit>
-    <NuGetAuditMode>all</NuGetAuditMode>
+ 
   </PropertyGroup>
 </Project>

@@ -18,15 +18,22 @@ public class FleetCustomer
     {
         var sb = new StringBuilder();
         sb.Append(Name.Trim().ToUpper());
-        
-        if (Kind == "vip") sb.Append(" [VIP]");
-        if (DoneCount > 10) sb.Append(" [ЛОЯЛЬНИЙ]");
-        
+
+        if (Kind == "vip")
+        {
+            sb.Append(" [VIP]");
+        }
+
+        if (DoneCount > 10)
+        {
+            sb.Append(" [ЛОЯЛЬНИЙ]");
+        }
+
         sb.Append($" <{Email.ToLower()}>");
-        
+
         int years = DateTime.Now.Year - SinceUtc.Year;
         sb.Append($" стаж {years}");
-        
+
         return sb.ToString();
     }
 }
@@ -50,14 +57,29 @@ public class LegacyMaintenanceProcessor
 
     private readonly List<string> _log = new();
 
-    public string Handle(int docId, FleetCustomer customer, 
-        List<ServiceLine>? items, string state, 
+    public string Handle(int docId, FleetCustomer customer,
+        List<ServiceLine>? items, string state,
         string currency, bool sendMail)
     {
-        if (items == null) return "ERR: null";
-        if (items.Count == 0) return "ERR: empty";
-        if (state != "new" && state != "paid") return "ERR: state";
-        if (customer.Email == null || !customer.Email.Contains("@")) return "ERR: mail";
+        if (items == null)
+        {
+            return "ERR: null";
+        }
+
+        if (items.Count == 0)
+        {
+            return "ERR: empty";
+        }
+
+        if (state != "new" && state != "paid")
+        {
+            return "ERR: state";
+        }
+
+        if (customer.Email == null || !customer.Email.Contains("@"))
+        {
+            return "ERR: mail";
+        }
 
         _log.Add("ok " + docId);
 
@@ -69,12 +91,12 @@ public class LegacyMaintenanceProcessor
         var sb = new StringBuilder();
         sb.Append($"Документ #{docId}\n");
         sb.Append($"Клієнт: {customer.Name}\n");
-        
+
         foreach (var item in items)
         {
             sb.Append($"{item.Code} x{item.Qty} = {(item.Qty * item.Price).ToString("0.00")} {currency}\n");
         }
-        
+
         sb.Append($"Знижка: {discount.ToString("0.00")} {currency}\n");
         sb.Append($"Доставка: {shipping.ToString("0.00")} {currency}\n");
         sb.Append($"Разом: {total.ToString("0.00")} {currency}\n");
@@ -83,7 +105,7 @@ public class LegacyMaintenanceProcessor
         {
             _log.Add("mail -> " + customer.Email);
         }
-        
+
         return sb.ToString();
     }
 
@@ -116,14 +138,18 @@ public class LegacyMaintenanceProcessor
 
     private decimal CalculateShipping(decimal subtotal, decimal discount)
     {
-        if (subtotal - discount < FreeShippingThreshold) return StandardShippingCost;
+        if (subtotal - discount < FreeShippingThreshold)
+        {
+            return StandardShippingCost;
+        }
+
         return 0m;
     }
 
     public string DumpLog()
     {
         var sb = new StringBuilder();
-        foreach (var l in _log) 
+        foreach (var l in _log)
         {
             sb.Append(l).Append('\n');
         }

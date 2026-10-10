@@ -14,7 +14,7 @@ public static class LegacyProcessor
     {
         newStatus = status;
         decimal total = 0;
-        
+
         if (docId <= 0)
         {
             System.Diagnostics.Debug.WriteLine("Помилка: номер документа");

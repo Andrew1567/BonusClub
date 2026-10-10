@@ -12,9 +12,14 @@ public sealed class WorkOrder
     public WorkOrder(int id, int clientId, DateOnly createdAt)
     {
         if (id <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(id));
+        }
+
         if (clientId <= 0)
+        {
             throw new ArgumentOutOfRangeException(nameof(clientId));
+        }
 
         Id = id;
         ClientId = clientId;
@@ -34,8 +39,11 @@ public sealed class WorkOrder
     {
         ArgumentNullException.ThrowIfNull(line);
         if (Status != WorkOrderStatus.Draft)
+        {
             throw new InvalidOperationException(
                 "Позиції додають лише до чернетки заявки");
+        }
+
         _lines.Add(line);
     }
 
@@ -43,7 +51,10 @@ public sealed class WorkOrder
     {
         Require(WorkOrderStatus.Draft);
         if (_lines.Count == 0)
+        {
             throw new InvalidOperationException("Заявка порожня");
+        }
+
         Status = WorkOrderStatus.Scheduled;
     }
 
@@ -63,15 +74,20 @@ public sealed class WorkOrder
     {
         if (Status is not (WorkOrderStatus.Draft
                            or WorkOrderStatus.Scheduled))
+        {
             throw new InvalidOperationException(
                 $"Скасування зі стану {Status} заборонено");
+        }
+
         Status = WorkOrderStatus.Cancelled;
     }
 
     private void Require(WorkOrderStatus expected)
     {
         if (Status != expected)
+        {
             throw new InvalidOperationException(
                 $"Перехід зі стану {Status} заборонено");
+        }
     }
 }

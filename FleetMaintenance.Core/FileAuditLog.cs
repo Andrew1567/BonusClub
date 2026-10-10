@@ -21,7 +21,11 @@ public sealed class FileAuditLog : IDisposable
 
     public void Dispose()
     {
-        if (_disposed) return;
+        if (_disposed)
+        {
+            return;
+        }
+
         _writer.Flush();
         _writer.Dispose();
         _disposed = true;
