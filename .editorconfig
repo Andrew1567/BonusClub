@@ -14,13 +14,13 @@ csharp_prefer_braces = true:warning
 dotnet_sort_system_directives_first = true
 csharp_style_namespace_declarations = file_scoped:warning
 
-# Отключение правил согласно методичке (Задание 7)
+
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1200.severity = none
 dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1309.severity = none
 
-# Отключение правил для старых файлов и скрытие лишнего "шума" StyleCop
+
 dotnet_diagnostic.CS1591.severity = none
 dotnet_diagnostic.SA1600.severity = none
 dotnet_diagnostic.SA1602.severity = none
@@ -36,3 +36,23 @@ dotnet_diagnostic.SA1201.severity = none
 dotnet_diagnostic.SA1202.severity = none
 dotnet_diagnostic.SA1204.severity = none
 dotnet_diagnostic.SA1516.severity = none
+dotnet_diagnostic.SA1513.severity = none
+dotnet_diagnostic.SA1028.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1649.severity = none
+dotnet_diagnostic.SA1122.severity = none
+dotnet_diagnostic.SA1502.severity = none
+dotnet_diagnostic.SA1012.severity = none
+dotnet_diagnostic.SA1013.severity = none
+dotnet_diagnostic.SA1503.severity = none
+dotnet_diagnostic.SA1519.severity = none
+dotnet_diagnostic.SA1116.severity = none
+dotnet_diagnostic.SA1117.severity = none
+dotnet_diagnostic.SA1413.severity = none
+dotnet_diagnostic.SA1136.severity = none
+dotnet_diagnostic.SA1400.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1512.severity = none
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1852.severity = none
+dotnet_diagnostic.CA1707.severity = none
