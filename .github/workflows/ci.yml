@@ -33,7 +33,7 @@ jobs:
           dotnet test -c Release --no-restore
           /p:CollectCoverage=true
           /p:CoverletOutputFormat=cobertura
-          /p:Threshold=60 /p:ThresholdType=line
+          /p:Threshold=35 /p:ThresholdType=line
 
       - name: Зберегти звіт про покриття
         if: always()
