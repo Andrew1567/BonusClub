@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text; // ДОДАНО: простір імен для StringBuilder
+using System.Linq; // ДОДАНО: простір імен для LINQ
+using System.Text;
 
 namespace FleetMaintenance.LegacyModule;
 
@@ -49,7 +50,6 @@ public class LegacyMaintenanceProcessor
         decimal ship = CalculateShipping(tmpSum, tmpDiscount);
         decimal total = tmpSum - tmpDiscount + ship;
 
-        // РЕФАКТОРИНГ (Дефект 6): Використання StringBuilder
         var sb = new StringBuilder();
         sb.Append($"Документ #{docId}\n");
         sb.Append($"Клієнт: {customer.Name}\n");
@@ -73,20 +73,17 @@ public class LegacyMaintenanceProcessor
 
     public decimal Preview(string clientKind, int clientDone, List<ServiceLine> items)
     {
-        decimal s = CalculateSubtotal(items);
-        decimal d = CalculateDiscount(clientKind, clientDone, s);
-        decimal sh = CalculateShipping(s, d);
-        return s - d + sh;
+        // РЕФАКТОРИНГ (Дефект 7): Змінили назви s, d, sh на зрозумілі (Rename Variable)
+        decimal subtotal = CalculateSubtotal(items);
+        decimal discount = CalculateDiscount(clientKind, clientDone, subtotal);
+        decimal shipping = CalculateShipping(subtotal, discount);
+        return subtotal - discount + shipping;
     }
 
     private decimal CalculateSubtotal(List<ServiceLine> items)
     {
-        decimal sum = 0m;
-        foreach (var it in items)
-        {
-            sum += it.Qty * it.Price;
-        }
-        return sum;
+        // РЕФАКТОРИНГ (Дефект 7): Замінили foreach на конвеєр LINQ (Replace Loop with Pipeline)
+        return items.Sum(item => item.Qty * item.Price);
     }
 
     private decimal CalculateDiscount(string kind, int doneCount, decimal subtotal)
@@ -117,7 +114,6 @@ public class LegacyMaintenanceProcessor
 
     public string DescribeClient(FleetCustomer c)
     {
-        // РЕФАКТОРИНГ (Дефект 6): Використання StringBuilder
         var sb = new StringBuilder();
         sb.Append(c.Name.Trim().ToUpper());
         
@@ -134,7 +130,6 @@ public class LegacyMaintenanceProcessor
 
     public string DumpLog()
     {
-        // РЕФАКТОРИНГ (Дефект 6): Використання StringBuilder
         var sb = new StringBuilder();
         foreach (var l in _log) 
         {
