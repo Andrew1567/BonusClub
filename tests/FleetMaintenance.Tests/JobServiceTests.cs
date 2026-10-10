@@ -43,4 +43,14 @@ public class JobServiceTests
 
         Assert.Throws<KeyNotFoundException>(() => service.TotalOf(404));
     }
+    [Fact]
+    public void Place_JobWithoutLines_ThrowsInvalidOperation()
+    {
+        var service = new JobService(
+            new FakeJobRepository(), new StubJobPricing(1m));
+        var job = new RepairJob(2, 5);
+
+        Assert.Throws<InvalidOperationException>(
+            () => service.Place(job));
+    }
 }
