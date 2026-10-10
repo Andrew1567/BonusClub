@@ -10,6 +10,8 @@ public sealed class MaintenanceDiscountPolicy
     public const decimal BigOrderRate = 0.10m;
     // Межа великої заявки, грн
     public const decimal BigOrderFrom = 1000m;
+    // Максимальна сума знижки, грн
+    public const decimal MaxDiscount = 150m;
 
     public decimal DiscountFor(decimal amount, bool isRegular)
     {
@@ -23,6 +25,10 @@ public sealed class MaintenanceDiscountPolicy
         if (amount >= BigOrderFrom)
             rate += BigOrderRate;
 
-        return decimal.Round(amount * rate, 2);
+        decimal discount = decimal.Round(amount * rate, 2);
+        if (discount > MaxDiscount)
+            discount = MaxDiscount;
+        
+        return discount;
     }
 }
