@@ -1,0 +1,74 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+[*.cs]
+max_line_length = 100
+csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:warning
+dotnet_sort_system_directives_first = true
+csharp_style_namespace_declarations = file_scoped:warning
+
+
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1309.severity = none
+
+
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1602.severity = none
+dotnet_diagnostic.SA1611.severity = none
+dotnet_diagnostic.SA1616.severity = none
+dotnet_diagnostic.SA1623.severity = none
+dotnet_diagnostic.SA1642.severity = none
+dotnet_diagnostic.SA1518.severity = none
+dotnet_diagnostic.SA0001.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CS8603.severity = none
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none
+dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1516.severity = none
+dotnet_diagnostic.SA1513.severity = none
+dotnet_diagnostic.SA1028.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1649.severity = none
+dotnet_diagnostic.SA1122.severity = none
+dotnet_diagnostic.SA1502.severity = none
+dotnet_diagnostic.SA1012.severity = none
+dotnet_diagnostic.SA1013.severity = none
+dotnet_diagnostic.SA1503.severity = none
+dotnet_diagnostic.SA1519.severity = none
+dotnet_diagnostic.SA1116.severity = none
+dotnet_diagnostic.SA1117.severity = none
+dotnet_diagnostic.SA1413.severity = none
+dotnet_diagnostic.SA1136.severity = none
+dotnet_diagnostic.SA1400.severity = none
+dotnet_diagnostic.CA1822.severity = none
+dotnet_diagnostic.CA1512.severity = none
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1852.severity = none
+dotnet_diagnostic.CA1707.severity = none
+# Требования для ЛР 8
+dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.SA1516.severity = suggestion
+
+# Отключение конфликтующих правил для старого кода и тестов
+dotnet_diagnostic.CA1051.severity = none
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1873.severity = none
+dotnet_diagnostic.SA1515.severity = none
+dotnet_diagnostic.CA1000.severity = none
+dotnet_diagnostic.SA1128.severity = none
+dotnet_diagnostic.CA1304.severity = none
+dotnet_diagnostic.CA1311.severity = none
+dotnet_diagnostic.CA1847.severity = none
+dotnet_diagnostic.SA1210.severity = none
