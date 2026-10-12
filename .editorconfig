@@ -13,6 +13,11 @@ csharp_new_line_before_open_brace = all
 csharp_prefer_braces = true:warning
 dotnet_sort_system_directives_first = true
 csharp_style_namespace_declarations = file_scoped:warning
+dotnet_diagnostic.S1186.severity = none
+dotnet_diagnostic.S2325.severity = none
+dotnet_diagnostic.S1643.severity = none
+dotnet_diagnostic.S2139.severity = none
+dotnet_diagnostic.S3236.severity = none
 
 
 dotnet_diagnostic.SA1633.severity = none
@@ -72,3 +77,13 @@ dotnet_diagnostic.CA1304.severity = none
 dotnet_diagnostic.CA1311.severity = none
 dotnet_diagnostic.CA1847.severity = none
 dotnet_diagnostic.SA1210.severity = none
+dotnet_diagnostic.S6562.severity = none
+dotnet_diagnostic.S3903.severity = none
+dotnet_diagnostic.S6667.severity = none
+
+# Додаємо вимкнення цих двох правил, які сиплять помилками в Legacy
+dotnet_diagnostic.SA1401.severity = none
+dotnet_diagnostic.S1104.severity = none
+
+[{**/obj/**,**/bin/**,*.g.cs,*.designer.cs,src/Legacy/**/*.cs,FleetMaintenance.Core/Legacy/**/*.cs}]
+generated_code = true

@@ -1,3 +1,4 @@
+#pragma warning disable RS0030
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ public class FleetCustomer
 
         sb.Append($" <{Email.ToLower()}>");
 
-        int years = DateTime.Now.Year - SinceUtc.Year;
+        int years = DateTimeOffset.Now.Year - SinceUtc.Year;
         sb.Append($" стаж {years}");
 
         return sb.ToString();

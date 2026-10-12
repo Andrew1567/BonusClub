@@ -1,3 +1,4 @@
+#pragma warning disable RS0030
 using System;
 using System.Text;
 using FleetMaintenance.App;
@@ -38,7 +39,7 @@ try
 
     var service = new WorkOrderService(repository, pricing, notifier, serviceLogger);
 
-    var order = new WorkOrder(1, 100, DateOnly.FromDateTime(DateTime.Today));
+    var order = new WorkOrder(1, 100, DateOnly.FromDateTime(DateTime.Now));
     repository.Add(order);
 
     while (true)

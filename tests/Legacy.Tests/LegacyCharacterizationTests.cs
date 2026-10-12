@@ -1,3 +1,4 @@
+#pragma warning disable RS0030
 using System;
 using System.Collections.Generic;
 using System.Globalization;

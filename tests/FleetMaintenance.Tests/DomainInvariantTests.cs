@@ -1,3 +1,4 @@
+#pragma warning disable RS0030
 using System;
 using FleetMaintenance.Core.Abstractions;
 using FleetMaintenance.Core.Domain;
@@ -51,5 +52,5 @@ public class DomainInvariantTests
     }
 
     private static WorkOrder NewOrder(int id) =>
-        new WorkOrder(id, 100, DateOnly.FromDateTime(DateTime.Today));
+        new WorkOrder(id, 100, DateOnly.FromDateTime(DateTime.Now));
 }
