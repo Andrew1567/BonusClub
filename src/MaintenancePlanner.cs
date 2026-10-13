@@ -8,7 +8,7 @@ namespace FleetMaintenance
         private CostCalculator _calc = new CostCalculator();
 
         public List<ServiceTask> Plan(Vehicle v, int fleetSize,
-            bool verbose)
+            bool verbose, DateTime? now = null)
         {
             var result = new List<ServiceTask>();
             if (v == null)
@@ -19,7 +19,7 @@ namespace FleetMaintenance
             {
                 return result;
             }
-            var now = DateTime.Now;
+            var current = now ?? DateTime.Now;
             int oilKm = 10000, oilMonths = 12;
             int brakeKm = 30000, brakeMonths = 24;
             int inspKm = 20000, inspMonths = 12;
@@ -40,8 +40,8 @@ namespace FleetMaintenance
             }
 
             int km = v.Odometer - v.LastOilKm;
-            int mo = (now.Year - v.LastOilDate.Year) * 12
-                + now.Month - v.LastOilDate.Month;
+            int mo = (current.Year - v.LastOilDate.Year) * 12
+                + current.Month - v.LastOilDate.Month;
             string st = null;
             if (km >= oilKm * 1.1 || mo >= oilMonths * 1.1)
             {
@@ -79,8 +79,8 @@ namespace FleetMaintenance
             // if (km >= 40000) { tires = true; }
 
             km = v.Odometer - v.LastBrakeKm;
-            mo = (now.Year - v.LastBrakeDate.Year) * 12
-                + now.Month - v.LastBrakeDate.Month;
+            mo = (current.Year - v.LastBrakeDate.Year) * 12
+                + current.Month - v.LastBrakeDate.Month;
             st = null;
             if (km >= brakeKm * 1.1 || mo >= brakeMonths * 1.1)
             {
@@ -116,8 +116,8 @@ namespace FleetMaintenance
             }
 
             km = v.Odometer - v.LastInspKm;
-            mo = (now.Year - v.LastInspDate.Year) * 12
-                + now.Month - v.LastInspDate.Month;
+            mo = (current.Year - v.LastInspDate.Year) * 12
+                + current.Month - v.LastInspDate.Month;
             st = null;
             if (km >= inspKm * 1.1 || mo >= inspMonths * 1.1)
             {
@@ -154,9 +154,9 @@ namespace FleetMaintenance
             return result;
         }
 
-        public bool IsAnyDue(Vehicle v)
+        public bool IsAnyDue(Vehicle v, DateTime? now = null)
         {
-            var now = DateTime.Now;
+            var current = now ?? DateTime.Now;
             int oilKm = 10000;
             int oilMonths = 12;
             if (v.Type == "van")
@@ -169,8 +169,8 @@ namespace FleetMaintenance
                 oilMonths = 6;
             }
             int km = v.Odometer - v.LastOilKm;
-            int mo = (now.Year - v.LastOilDate.Year) * 12
-                + now.Month - v.LastOilDate.Month;
+            int mo = (current.Year - v.LastOilDate.Year) * 12
+                + current.Month - v.LastOilDate.Month;
             if (km >= oilKm || mo >= oilMonths)
             {
                 return true;
@@ -187,8 +187,8 @@ namespace FleetMaintenance
                 brakeMonths = 12;
             }
             km = v.Odometer - v.LastBrakeKm;
-            mo = (now.Year - v.LastBrakeDate.Year) * 12
-                + now.Month - v.LastBrakeDate.Month;
+            mo = (current.Year - v.LastBrakeDate.Year) * 12
+                + current.Month - v.LastBrakeDate.Month;
             return km >= brakeKm || mo >= brakeMonths;
         }
 
