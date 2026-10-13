@@ -13,11 +13,7 @@ namespace FleetMaintenance
             bool verbose, DateTime? now = null)
         {
             var result = new List<ServiceTask>();
-            if (vehicle == null)
-            {
-                return result;
-            }
-            if (!vehicle.Active)
+            if (vehicle == null || !vehicle.Active)
             {
                 return result;
             }
@@ -42,8 +38,7 @@ namespace FleetMaintenance
             }
 
             int kmSince = vehicle.Odometer - vehicle.LastOilKm;
-            int monthsSince = (current.Year - vehicle.LastOilDate.Year) * 12
-                + current.Month - vehicle.LastOilDate.Month;
+            int monthsSince = MonthsSince(vehicle.LastOilDate, current);
             string state = StateFor(kmSince, monthsSince, oilKm, oilMonths);
             
             if (state != null)
@@ -52,8 +47,7 @@ namespace FleetMaintenance
                 t.VehicleId = vehicle.Id;
                 t.Kind = "oil";
                 t.State = state;
-                t.Cost = _calc.Estimate(
-                    "oil", vehicle.Type, state, fleetSize);
+                t.Cost = _calc.Estimate("oil", vehicle.Type, state, fleetSize);
                 t.Reason = "km=" + kmSince + ", months=" + monthsSince;
                 result.Add(t);
                 if (verbose)
@@ -61,17 +55,13 @@ namespace FleetMaintenance
                     Console.WriteLine(vehicle.Plate + ": oil " + state);
                     if (state == "OVERDUE")
                     {
-                        Console.WriteLine(
-                            "  !!! overdue " + t.Reason);
+                        Console.WriteLine("  !!! overdue " + t.Reason);
                     }
                 }
             }
-            // old rule: tires every 40000 km
-            // if (km >= 40000) { tires = true; }
 
             kmSince = vehicle.Odometer - vehicle.LastBrakeKm;
-            monthsSince = (current.Year - vehicle.LastBrakeDate.Year) * 12
-                + current.Month - vehicle.LastBrakeDate.Month;
+            monthsSince = MonthsSince(vehicle.LastBrakeDate, current);
             state = StateFor(kmSince, monthsSince, brakeKm, brakeMonths);
             
             if (state != null)
@@ -80,8 +70,7 @@ namespace FleetMaintenance
                 t.VehicleId = vehicle.Id;
                 t.Kind = "brake";
                 t.State = state;
-                t.Cost = _calc.Estimate(
-                    "brake", vehicle.Type, state, fleetSize);
+                t.Cost = _calc.Estimate("brake", vehicle.Type, state, fleetSize);
                 t.Reason = "km=" + kmSince + ", months=" + monthsSince;
                 result.Add(t);
                 if (verbose)
@@ -89,15 +78,13 @@ namespace FleetMaintenance
                     Console.WriteLine(vehicle.Plate + ": brake " + state);
                     if (state == "OVERDUE")
                     {
-                        Console.WriteLine(
-                            "  !!! overdue " + t.Reason);
+                        Console.WriteLine("  !!! overdue " + t.Reason);
                     }
                 }
             }
 
             kmSince = vehicle.Odometer - vehicle.LastInspKm;
-            monthsSince = (current.Year - vehicle.LastInspDate.Year) * 12
-                + current.Month - vehicle.LastInspDate.Month;
+            monthsSince = MonthsSince(vehicle.LastInspDate, current);
             state = StateFor(kmSince, monthsSince, inspKm, inspMonths);
             
             if (state != null)
@@ -106,8 +93,7 @@ namespace FleetMaintenance
                 t.VehicleId = vehicle.Id;
                 t.Kind = "insp";
                 t.State = state;
-                t.Cost = _calc.Estimate(
-                    "insp", vehicle.Type, state, fleetSize);
+                t.Cost = _calc.Estimate("insp", vehicle.Type, state, fleetSize);
                 t.Reason = "km=" + kmSince + ", months=" + monthsSince;
                 result.Add(t);
                 if (verbose)
@@ -115,8 +101,7 @@ namespace FleetMaintenance
                     Console.WriteLine(vehicle.Plate + ": insp " + state);
                     if (state == "OVERDUE")
                     {
-                        Console.WriteLine(
-                            "  !!! overdue " + t.Reason);
+                        Console.WriteLine("  !!! overdue " + t.Reason);
                     }
                 }
             }
@@ -145,6 +130,11 @@ namespace FleetMaintenance
             return kmSince >= limitKm * factor || monthsSince >= limitMonths * factor;
         }
 
+        private int MonthsSince(DateTime past, DateTime current)
+        {
+            return (current.Year - past.Year) * 12 + current.Month - past.Month;
+        }
+
         public bool IsAnyDue(Vehicle vehicle, DateTime? now = null)
         {
             var current = now ?? DateTime.Now;
@@ -159,13 +149,15 @@ namespace FleetMaintenance
                 oilKm = 20000;
                 oilMonths = 6;
             }
+            
             int kmSince = vehicle.Odometer - vehicle.LastOilKm;
-            int monthsSince = (current.Year - vehicle.LastOilDate.Year) * 12
-                + current.Month - vehicle.LastOilDate.Month;
+            int monthsSince = MonthsSince(vehicle.LastOilDate, current);
+            
             if (kmSince >= oilKm || monthsSince >= oilMonths)
             {
                 return true;
             }
+            
             int brakeKm = 30000;
             int brakeMonths = 24;
             if (vehicle.Type == "van")
@@ -177,9 +169,10 @@ namespace FleetMaintenance
                 brakeKm = 50000;
                 brakeMonths = 12;
             }
+            
             kmSince = vehicle.Odometer - vehicle.LastBrakeKm;
-            monthsSince = (current.Year - vehicle.LastBrakeDate.Year) * 12
-                + current.Month - vehicle.LastBrakeDate.Month;
+            monthsSince = MonthsSince(vehicle.LastBrakeDate, current);
+            
             return kmSince >= brakeKm || monthsSince >= brakeMonths;
         }
 
