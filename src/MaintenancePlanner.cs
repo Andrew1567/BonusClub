@@ -40,72 +40,42 @@ namespace FleetMaintenance
             int kmSince = vehicle.Odometer - vehicle.LastOilKm;
             int monthsSince = MonthsSince(vehicle.LastOilDate, current);
             string state = StateFor(kmSince, monthsSince, oilKm, oilMonths);
-            
-            if (state != null)
-            {
-                var t = new ServiceTask();
-                t.VehicleId = vehicle.Id;
-                t.Kind = "oil";
-                t.State = state;
-                t.Cost = _calc.Estimate("oil", vehicle.Type, state, fleetSize);
-                t.Reason = "km=" + kmSince + ", months=" + monthsSince;
-                result.Add(t);
-                if (verbose)
-                {
-                    Console.WriteLine(vehicle.Plate + ": oil " + state);
-                    if (state == "OVERDUE")
-                    {
-                        Console.WriteLine("  !!! overdue " + t.Reason);
-                    }
-                }
-            }
+            CreateTask(result, vehicle, "oil", state, kmSince, monthsSince, fleetSize, verbose);
 
             kmSince = vehicle.Odometer - vehicle.LastBrakeKm;
             monthsSince = MonthsSince(vehicle.LastBrakeDate, current);
             state = StateFor(kmSince, monthsSince, brakeKm, brakeMonths);
-            
-            if (state != null)
-            {
-                var t = new ServiceTask();
-                t.VehicleId = vehicle.Id;
-                t.Kind = "brake";
-                t.State = state;
-                t.Cost = _calc.Estimate("brake", vehicle.Type, state, fleetSize);
-                t.Reason = "km=" + kmSince + ", months=" + monthsSince;
-                result.Add(t);
-                if (verbose)
-                {
-                    Console.WriteLine(vehicle.Plate + ": brake " + state);
-                    if (state == "OVERDUE")
-                    {
-                        Console.WriteLine("  !!! overdue " + t.Reason);
-                    }
-                }
-            }
+            CreateTask(result, vehicle, "brake", state, kmSince, monthsSince, fleetSize, verbose);
 
             kmSince = vehicle.Odometer - vehicle.LastInspKm;
             monthsSince = MonthsSince(vehicle.LastInspDate, current);
             state = StateFor(kmSince, monthsSince, inspKm, inspMonths);
-            
-            if (state != null)
+            CreateTask(result, vehicle, "insp", state, kmSince, monthsSince, fleetSize, verbose);
+
+            return result;
+        }
+
+        private void CreateTask(List<ServiceTask> result, Vehicle vehicle, string kind, string state, int kmSince, int monthsSince, int fleetSize, bool verbose)
+        {
+            if (state == null)
             {
-                var t = new ServiceTask();
-                t.VehicleId = vehicle.Id;
-                t.Kind = "insp";
-                t.State = state;
-                t.Cost = _calc.Estimate("insp", vehicle.Type, state, fleetSize);
-                t.Reason = "km=" + kmSince + ", months=" + monthsSince;
-                result.Add(t);
-                if (verbose)
+                return;
+            }
+            var t = new ServiceTask();
+            t.VehicleId = vehicle.Id;
+            t.Kind = kind;
+            t.State = state;
+            t.Cost = _calc.Estimate(kind, vehicle.Type, state, fleetSize);
+            t.Reason = "km=" + kmSince + ", months=" + monthsSince;
+            result.Add(t);
+            if (verbose)
+            {
+                Console.WriteLine(vehicle.Plate + ": " + kind + " " + state);
+                if (state == "OVERDUE")
                 {
-                    Console.WriteLine(vehicle.Plate + ": insp " + state);
-                    if (state == "OVERDUE")
-                    {
-                        Console.WriteLine("  !!! overdue " + t.Reason);
-                    }
+                    Console.WriteLine("  !!! overdue " + t.Reason);
                 }
             }
-            return result;
         }
 
         private string StateFor(int kmSince, int monthsSince, int limitKm, int limitMonths)
