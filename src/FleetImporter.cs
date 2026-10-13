@@ -7,7 +7,6 @@ namespace FleetMaintenance
     {
         public Vehicle Parse(string line)
         {
-            // Охранное условие 1
             if (line == null)
             {
                 return null;
@@ -15,14 +14,12 @@ namespace FleetMaintenance
 
             string[] p = line.Split(';');
             
-            // Охранное условие 2
             if (p.Length != 6)
             {
                 return null;
             }
 
             int id, odo, last;
-            // Охранное условие 3 (если хотя бы одно число не спарсилось, выходим)
             if (!int.TryParse(p[0], out id) ||
                 !int.TryParse(p[3], out odo) ||
                 !int.TryParse(p[4], out last))
@@ -31,13 +28,11 @@ namespace FleetMaintenance
             }
 
             DateTime d;
-            // Охранное условие 4
             if (!DateTime.TryParse(p[5], out d))
             {
                 return null;
             }
 
-            // Если все проверки пройдены, создаем объект
             var v = new Vehicle();
             v.Id = id;
             v.Plate = p[1];
@@ -56,21 +51,28 @@ namespace FleetMaintenance
         public List<Vehicle> LoadAll(string[] lines)
         {
             var list = new List<Vehicle>();
-            for (int i = 0; i < lines.Length; i++)
+            foreach (var line in lines)
             {
-                try
+                if (TryParse(line, out Vehicle v))
                 {
-                    var v = Parse(lines[i]);
-                    if (v != null)
-                    {
-                        list.Add(v);
-                    }
-                }
-                catch (Exception)
-                {
+                    list.Add(v);
                 }
             }
             return list;
+        }
+
+        private bool TryParse(string line, out Vehicle vehicle)
+        {
+            vehicle = null;
+            try
+            {
+                vehicle = Parse(line);
+                return vehicle != null;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
