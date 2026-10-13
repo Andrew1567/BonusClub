@@ -4,6 +4,7 @@ namespace FleetMaintenance
 {
     public class CostCalculator
     {
+       private const decimal OverdueSurcharge = 1.15m;
         public decimal Estimate(string kind, string type,
             string state, int fleetSize)
         {
@@ -42,7 +43,7 @@ namespace FleetMaintenance
             }
             if (state == "OVERDUE")
             {
-                cost = cost * 1.15m;
+                cost = cost *  OverdueSurcharge;
             }
             if (fleetSize > 10)
             {

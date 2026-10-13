@@ -6,6 +6,7 @@ namespace FleetMaintenance
 {
     public class FleetReport
     {
+        private const decimal OverdueSurcharge = 1.15m;
         private MaintenancePlanner _planner =
             new MaintenancePlanner();
         private FleetRepository _repo;
@@ -45,7 +46,7 @@ namespace FleetMaintenance
                         decimal c = t.Cost;
                         if (t.State == "OVERDUE")
                         {
-                            c = c * 1.15m;
+                            c = c *  OverdueSurcharge;
                         }
                         total += c;
                     }

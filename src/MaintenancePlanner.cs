@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 
+
 namespace FleetMaintenance
 {
     public class MaintenancePlanner
     {
+        private const double OverdueFactor = 1.1;
+        private const double DueSoonFactor = 0.9;
         private CostCalculator _calc = new CostCalculator();
 
         public List<ServiceTask> Plan(Vehicle v, int fleetSize,
@@ -43,7 +46,7 @@ namespace FleetMaintenance
             int mo = (current.Year - v.LastOilDate.Year) * 12
                 + current.Month - v.LastOilDate.Month;
             string st = null;
-            if (km >= oilKm * 1.1 || mo >= oilMonths * 1.1)
+            if (km >= oilKm * OverdueFactor || mo >= oilMonths * OverdueFactor)
             {
                 st = "OVERDUE";
             }
@@ -51,7 +54,7 @@ namespace FleetMaintenance
             {
                 st = "DUE";
             }
-            else if (km >= oilKm * 0.9 || mo >= oilMonths * 0.9)
+            else if (km >= oilKm * DueSoonFactor || mo >= oilMonths * DueSoonFactor)
             {
                 st = "DUE_SOON";
             }
@@ -82,7 +85,7 @@ namespace FleetMaintenance
             mo = (current.Year - v.LastBrakeDate.Year) * 12
                 + current.Month - v.LastBrakeDate.Month;
             st = null;
-            if (km >= brakeKm * 1.1 || mo >= brakeMonths * 1.1)
+            if (km >= brakeKm * OverdueFactor || mo >= brakeMonths * OverdueFactor)
             {
                 st = "OVERDUE";
             }
@@ -90,7 +93,7 @@ namespace FleetMaintenance
             {
                 st = "DUE";
             }
-            else if (km >= brakeKm * 0.9 || mo >= brakeMonths * 0.9)
+            else if (km >= brakeKm * DueSoonFactor || mo >= brakeMonths * DueSoonFactor)
             {
                 st = "DUE_SOON";
             }
@@ -119,7 +122,7 @@ namespace FleetMaintenance
             mo = (current.Year - v.LastInspDate.Year) * 12
                 + current.Month - v.LastInspDate.Month;
             st = null;
-            if (km >= inspKm * 1.1 || mo >= inspMonths * 1.1)
+            if (km >= inspKm * OverdueFactor || mo >= inspMonths * OverdueFactor)
             {
                 st = "OVERDUE";
             }
@@ -127,7 +130,7 @@ namespace FleetMaintenance
             {
                 st = "DUE";
             }
-            else if (km >= inspKm * 0.9 || mo >= inspMonths * 0.9)
+            else if (km >= inspKm * DueSoonFactor || mo >= inspMonths * DueSoonFactor)
             {
                 st = "DUE_SOON";
             }
