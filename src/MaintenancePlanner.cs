@@ -107,9 +107,10 @@ namespace FleetMaintenance
 
         private bool IsReached(int kmSince, int monthsSince, int limitKm, int limitMonths, double factor)
         {
-            return kmSince >= limitKm * factor || monthsSince >= limitMonths * factor;
+            bool byKm = kmSince >= limitKm * factor;
+            bool byMonths = monthsSince >= limitMonths * factor;
+            return byKm || byMonths;
         }
-
         private int MonthsSince(DateTime past, DateTime current)
         {
             return (current.Year - past.Year) * 12 + current.Month - past.Month;
