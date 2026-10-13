@@ -4,7 +4,10 @@ namespace FleetMaintenance
 {
     public class CostCalculator
     {
-       private const decimal OverdueSurcharge = 1.15m;
+        private const decimal OverdueSurcharge = 1.15m;
+        private const decimal FleetDiscount = 0.95m;
+        private const int FleetThreshold = 10;
+
         public decimal Estimate(string kind, string type,
             string state, int fleetSize)
         {
@@ -43,11 +46,11 @@ namespace FleetMaintenance
             }
             if (state == "OVERDUE")
             {
-                cost = cost *  OverdueSurcharge;
+                cost = cost * OverdueSurcharge;
             }
-            if (fleetSize > 10)
+            if (fleetSize > FleetThreshold)
             {
-                cost = cost * 0.95m;
+                cost = cost * FleetDiscount;
             }
             return Math.Round(cost, 2);
         }

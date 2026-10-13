@@ -46,7 +46,7 @@ namespace FleetMaintenance
                         decimal c = t.Cost;
                         if (t.State == "OVERDUE")
                         {
-                            c = c *  OverdueSurcharge;
+                            c = c * OverdueSurcharge;
                         }
                         total += c;
                     }
