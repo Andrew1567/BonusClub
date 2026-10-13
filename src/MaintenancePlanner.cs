@@ -18,16 +18,29 @@ namespace FleetMaintenance
                 return result;
             }
             var current = now ?? DateTime.Now;
-            int oilKm = 10000, oilMonths = 12;
-            int brakeKm = 30000, brakeMonths = 24;
-            int inspKm = 20000, inspMonths = 12;
-            if (vehicle.Type == "van")
+            
+            GetLimits(vehicle.Type, out int oilKm, out int oilMonths, out int brakeKm, out int brakeMonths, out int inspKm, out int inspMonths);
+
+            CheckTask(result, vehicle, "oil", oilKm, oilMonths, vehicle.LastOilKm, vehicle.LastOilDate, current, fleetSize, verbose);
+            CheckTask(result, vehicle, "brake", brakeKm, brakeMonths, vehicle.LastBrakeKm, vehicle.LastBrakeDate, current, fleetSize, verbose);
+            CheckTask(result, vehicle, "insp", inspKm, inspMonths, vehicle.LastInspKm, vehicle.LastInspDate, current, fleetSize, verbose);
+
+            return result;
+        }
+
+        private void GetLimits(string type, out int oilKm, out int oilMonths, out int brakeKm, out int brakeMonths, out int inspKm, out int inspMonths)
+        {
+            oilKm = 10000; oilMonths = 12;
+            brakeKm = 30000; brakeMonths = 24;
+            inspKm = 20000; inspMonths = 12;
+            
+            if (type == "van")
             {
                 oilKm = 15000;
                 brakeKm = 40000;
                 inspKm = 25000;
             }
-            else if (vehicle.Type == "truck")
+            else if (type == "truck")
             {
                 oilKm = 20000;
                 oilMonths = 6;
@@ -36,13 +49,6 @@ namespace FleetMaintenance
                 inspKm = 30000;
                 inspMonths = 6;
             }
-
-            // Дивись, як тепер гарно і коротко виглядає основний метод!
-            CheckTask(result, vehicle, "oil", oilKm, oilMonths, vehicle.LastOilKm, vehicle.LastOilDate, current, fleetSize, verbose);
-            CheckTask(result, vehicle, "brake", brakeKm, brakeMonths, vehicle.LastBrakeKm, vehicle.LastBrakeDate, current, fleetSize, verbose);
-            CheckTask(result, vehicle, "insp", inspKm, inspMonths, vehicle.LastInspKm, vehicle.LastInspDate, current, fleetSize, verbose);
-
-            return result;
         }
 
         private void CheckTask(List<ServiceTask> result, Vehicle vehicle, string kind, int limitKm, int limitMonths, int lastKm, DateTime lastDate, DateTime current, int fleetSize, bool verbose)
@@ -106,86 +112,40 @@ namespace FleetMaintenance
         public bool IsAnyDue(Vehicle vehicle, DateTime? now = null)
         {
             var current = now ?? DateTime.Now;
-            int oilKm = 10000;
-            int oilMonths = 12;
-            if (vehicle.Type == "van")
-            {
-                oilKm = 15000;
-            }
-            else if (vehicle.Type == "truck")
-            {
-                oilKm = 20000;
-                oilMonths = 6;
-            }
+            GetLimits(vehicle.Type, out int oilKm, out int oilMonths, out int brakeKm, out int brakeMonths, out int _, out int _);
             
             int kmSince = vehicle.Odometer - vehicle.LastOilKm;
             int monthsSince = MonthsSince(vehicle.LastOilDate, current);
-            
             if (kmSince >= oilKm || monthsSince >= oilMonths)
             {
                 return true;
             }
             
-            int brakeKm = 30000;
-            int brakeMonths = 24;
-            if (vehicle.Type == "van")
-            {
-                brakeKm = 40000;
-            }
-            else if (vehicle.Type == "truck")
-            {
-                brakeKm = 50000;
-                brakeMonths = 12;
-            }
-            
             kmSince = vehicle.Odometer - vehicle.LastBrakeKm;
             monthsSince = MonthsSince(vehicle.LastBrakeDate, current);
-            
             return kmSince >= brakeKm || monthsSince >= brakeMonths;
         }
 
         public int NextDueKm(Vehicle vehicle, string kind)
         {
+            GetLimits(vehicle.Type, out int oilKm, out int _, out int brakeKm, out int _, out int inspKm, out int _);
+            
             int last = 0;
             int step = 0;
             if (kind == "oil")
             {
                 last = vehicle.LastOilKm;
-                step = 10000;
-                if (vehicle.Type == "van")
-                {
-                    step = 15000;
-                }
-                else if (vehicle.Type == "truck")
-                {
-                    step = 20000;
-                }
+                step = oilKm;
             }
             else if (kind == "brake")
             {
                 last = vehicle.LastBrakeKm;
-                step = 30000;
-                if (vehicle.Type == "van")
-                {
-                    step = 40000;
-                }
-                else if (vehicle.Type == "truck")
-                {
-                    step = 50000;
-                }
+                step = brakeKm;
             }
             else if (kind == "insp")
             {
                 last = vehicle.LastInspKm;
-                step = 20000;
-                if (vehicle.Type == "van")
-                {
-                    step = 25000;
-                }
-                else if (vehicle.Type == "truck")
-                {
-                    step = 30000;
-                }
+                step = inspKm;
             }
             else
             {
