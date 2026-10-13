@@ -7,5 +7,14 @@ namespace FleetMaintenance
         public string State;
         public decimal Cost;
         public string Reason;
+        public decimal ReportedCost()
+        {
+            if (State == "OVERDUE")
+            {
+                return Cost * 1.15m;
+            }
+            return Cost;
+        }
     }
+
 }
