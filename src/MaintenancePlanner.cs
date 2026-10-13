@@ -72,12 +72,18 @@ namespace FleetMaintenance
             t.Cost = _calc.Estimate(kind, vehicle.Type, state, fleetSize);
             t.Reason = "km=" + kmSince + ", months=" + monthsSince;
             result.Add(t);
+            
+            Log(vehicle.Plate, kind, state, t.Reason, verbose);
+        }
+
+        private void Log(string plate, string kind, string state, string reason, bool verbose)
+        {
             if (verbose)
             {
-                Console.WriteLine(vehicle.Plate + ": " + kind + " " + state);
+                Console.WriteLine(plate + ": " + kind + " " + state);
                 if (state == "OVERDUE")
                 {
-                    Console.WriteLine("  !!! overdue " + t.Reason);
+                    Console.WriteLine("  !!! overdue " + reason);
                 }
             }
         }
