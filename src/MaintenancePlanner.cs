@@ -44,19 +44,8 @@ namespace FleetMaintenance
             int kmSince = vehicle.Odometer - vehicle.LastOilKm;
             int monthsSince = (current.Year - vehicle.LastOilDate.Year) * 12
                 + current.Month - vehicle.LastOilDate.Month;
-            string state = null;
-            if (kmSince >= oilKm * OverdueFactor || monthsSince >= oilMonths * OverdueFactor)
-            {
-                state = "OVERDUE";
-            }
-            else if (kmSince >= oilKm || monthsSince >= oilMonths)
-            {
-                state = "DUE";
-            }
-            else if (kmSince >= oilKm * DueSoonFactor || monthsSince >= oilMonths * DueSoonFactor)
-            {
-                state = "DUE_SOON";
-            }
+            string state = StateFor(kmSince, monthsSince, oilKm, oilMonths);
+            
             if (state != null)
             {
                 var t = new ServiceTask();
@@ -83,19 +72,8 @@ namespace FleetMaintenance
             kmSince = vehicle.Odometer - vehicle.LastBrakeKm;
             monthsSince = (current.Year - vehicle.LastBrakeDate.Year) * 12
                 + current.Month - vehicle.LastBrakeDate.Month;
-            state = null;
-            if (kmSince >= brakeKm * OverdueFactor || monthsSince >= brakeMonths * OverdueFactor)
-            {
-                state = "OVERDUE";
-            }
-            else if (kmSince >= brakeKm || monthsSince >= brakeMonths)
-            {
-                state = "DUE";
-            }
-            else if (kmSince >= brakeKm * DueSoonFactor || monthsSince >= brakeMonths * DueSoonFactor)
-            {
-                state = "DUE_SOON";
-            }
+            state = StateFor(kmSince, monthsSince, brakeKm, brakeMonths);
+            
             if (state != null)
             {
                 var t = new ServiceTask();
@@ -120,19 +98,8 @@ namespace FleetMaintenance
             kmSince = vehicle.Odometer - vehicle.LastInspKm;
             monthsSince = (current.Year - vehicle.LastInspDate.Year) * 12
                 + current.Month - vehicle.LastInspDate.Month;
-            state = null;
-            if (kmSince >= inspKm * OverdueFactor || monthsSince >= inspMonths * OverdueFactor)
-            {
-                state = "OVERDUE";
-            }
-            else if (kmSince >= inspKm || monthsSince >= inspMonths)
-            {
-                state = "DUE";
-            }
-            else if (kmSince >= inspKm * DueSoonFactor || monthsSince >= inspMonths * DueSoonFactor)
-            {
-                state = "DUE_SOON";
-            }
+            state = StateFor(kmSince, monthsSince, inspKm, inspMonths);
+            
             if (state != null)
             {
                 var t = new ServiceTask();
@@ -154,6 +121,28 @@ namespace FleetMaintenance
                 }
             }
             return result;
+        }
+
+        private string StateFor(int kmSince, int monthsSince, int limitKm, int limitMonths)
+        {
+            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, OverdueFactor))
+            {
+                return "OVERDUE";
+            }
+            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, 1.0))
+            {
+                return "DUE";
+            }
+            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, DueSoonFactor))
+            {
+                return "DUE_SOON";
+            }
+            return null;
+        }
+
+        private bool IsReached(int kmSince, int monthsSince, int limitKm, int limitMonths, double factor)
+        {
+            return kmSince >= limitKm * factor || monthsSince >= limitMonths * factor;
         }
 
         public bool IsAnyDue(Vehicle vehicle, DateTime? now = null)
