@@ -37,22 +37,20 @@ namespace FleetMaintenance
                 inspMonths = 6;
             }
 
-            int kmSince = vehicle.Odometer - vehicle.LastOilKm;
-            int monthsSince = MonthsSince(vehicle.LastOilDate, current);
-            string state = StateFor(kmSince, monthsSince, oilKm, oilMonths);
-            CreateTask(result, vehicle, "oil", state, kmSince, monthsSince, fleetSize, verbose);
-
-            kmSince = vehicle.Odometer - vehicle.LastBrakeKm;
-            monthsSince = MonthsSince(vehicle.LastBrakeDate, current);
-            state = StateFor(kmSince, monthsSince, brakeKm, brakeMonths);
-            CreateTask(result, vehicle, "brake", state, kmSince, monthsSince, fleetSize, verbose);
-
-            kmSince = vehicle.Odometer - vehicle.LastInspKm;
-            monthsSince = MonthsSince(vehicle.LastInspDate, current);
-            state = StateFor(kmSince, monthsSince, inspKm, inspMonths);
-            CreateTask(result, vehicle, "insp", state, kmSince, monthsSince, fleetSize, verbose);
+            // Дивись, як тепер гарно і коротко виглядає основний метод!
+            CheckTask(result, vehicle, "oil", oilKm, oilMonths, vehicle.LastOilKm, vehicle.LastOilDate, current, fleetSize, verbose);
+            CheckTask(result, vehicle, "brake", brakeKm, brakeMonths, vehicle.LastBrakeKm, vehicle.LastBrakeDate, current, fleetSize, verbose);
+            CheckTask(result, vehicle, "insp", inspKm, inspMonths, vehicle.LastInspKm, vehicle.LastInspDate, current, fleetSize, verbose);
 
             return result;
+        }
+
+        private void CheckTask(List<ServiceTask> result, Vehicle vehicle, string kind, int limitKm, int limitMonths, int lastKm, DateTime lastDate, DateTime current, int fleetSize, bool verbose)
+        {
+            int kmSince = vehicle.Odometer - lastKm;
+            int monthsSince = MonthsSince(lastDate, current);
+            string state = StateFor(kmSince, monthsSince, limitKm, limitMonths);
+            CreateTask(result, vehicle, kind, state, kmSince, monthsSince, fleetSize, verbose);
         }
 
         private void CreateTask(List<ServiceTask> result, Vehicle vehicle, string kind, string state, int kmSince, int monthsSince, int fleetSize, bool verbose)
