@@ -7,35 +7,49 @@ namespace FleetMaintenance
     {
         public Vehicle Parse(string line)
         {
-            Vehicle v = null;
-            if (line != null)
+            // Охранное условие 1
+            if (line == null)
             {
-                string[] p = line.Split(';');
-                if (p.Length == 6)
-                {
-                    int id, odo, last;
-                    if (int.TryParse(p[0], out id)
-                        && int.TryParse(p[3], out odo)
-                        && int.TryParse(p[4], out last))
-                    {
-                        DateTime d;
-                        if (DateTime.TryParse(p[5], out d))
-                        {
-                            v = new Vehicle();
-                            v.Id = id;
-                            v.Plate = p[1];
-                            v.Type = p[2];
-                            v.Odometer = odo;
-                            v.LastOilKm = last;
-                            v.LastOilDate = d;
-                            v.LastBrakeKm = last;
-                            v.LastBrakeDate = d;
-                            v.LastInspKm = last;
-                            v.LastInspDate = d;
-                        }
-                    }
-                }
+                return null;
             }
+
+            string[] p = line.Split(';');
+            
+            // Охранное условие 2
+            if (p.Length != 6)
+            {
+                return null;
+            }
+
+            int id, odo, last;
+            // Охранное условие 3 (если хотя бы одно число не спарсилось, выходим)
+            if (!int.TryParse(p[0], out id) ||
+                !int.TryParse(p[3], out odo) ||
+                !int.TryParse(p[4], out last))
+            {
+                return null;
+            }
+
+            DateTime d;
+            // Охранное условие 4
+            if (!DateTime.TryParse(p[5], out d))
+            {
+                return null;
+            }
+
+            // Если все проверки пройдены, создаем объект
+            var v = new Vehicle();
+            v.Id = id;
+            v.Plate = p[1];
+            v.Type = p[2];
+            v.Odometer = odo;
+            v.LastOilKm = last;
+            v.LastOilDate = d;
+            v.LastBrakeKm = last;
+            v.LastBrakeDate = d;
+            v.LastInspKm = last;
+            v.LastInspDate = d;
+
             return v;
         }
 
