@@ -9,6 +9,21 @@ namespace FleetMaintenance
         private const double DueSoonFactor = 0.9;
         private CostCalculator _calc = new CostCalculator();
 
+        private readonly Dictionary<string, int[]> _oilLimits = new Dictionary<string, int[]>
+        {
+            { "default", new[] { 10000, 12 } }, { "van", new[] { 15000, 12 } }, { "truck", new[] { 20000, 6 } }
+        };
+        
+        private readonly Dictionary<string, int[]> _brakeLimits = new Dictionary<string, int[]>
+        {
+            { "default", new[] { 30000, 24 } }, { "van", new[] { 40000, 24 } }, { "truck", new[] { 50000, 12 } }
+        };
+        
+        private readonly Dictionary<string, int[]> _inspLimits = new Dictionary<string, int[]>
+        {
+            { "default", new[] { 20000, 12 } }, { "van", new[] { 25000, 12 } }, { "truck", new[] { 30000, 6 } }
+        };
+
         public List<ServiceTask> Plan(Vehicle vehicle, int fleetSize,
             bool verbose, DateTime? now = null)
         {
@@ -30,25 +45,13 @@ namespace FleetMaintenance
 
         private void GetLimits(string type, out int oilKm, out int oilMonths, out int brakeKm, out int brakeMonths, out int inspKm, out int inspMonths)
         {
-            oilKm = 10000; oilMonths = 12;
-            brakeKm = 30000; brakeMonths = 24;
-            inspKm = 20000; inspMonths = 12;
-            
-            if (type == "van")
-            {
-                oilKm = 15000;
-                brakeKm = 40000;
-                inspKm = 25000;
-            }
-            else if (type == "truck")
-            {
-                oilKm = 20000;
-                oilMonths = 6;
-                brakeKm = 50000;
-                brakeMonths = 12;
-                inspKm = 30000;
-                inspMonths = 6;
-            }
+            var oil = _oilLimits.ContainsKey(type) ? _oilLimits[type] : _oilLimits["default"];
+            var brake = _brakeLimits.ContainsKey(type) ? _brakeLimits[type] : _brakeLimits["default"];
+            var insp = _inspLimits.ContainsKey(type) ? _inspLimits[type] : _inspLimits["default"];
+
+            oilKm = oil[0]; oilMonths = oil[1];
+            brakeKm = brake[0]; brakeMonths = brake[1];
+            inspKm = insp[0]; inspMonths = insp[1];
         }
 
         private void CheckTask(List<ServiceTask> result, Vehicle vehicle, string kind, int limitKm, int limitMonths, int lastKm, DateTime lastDate, DateTime current, int fleetSize, bool verbose)
@@ -111,6 +114,7 @@ namespace FleetMaintenance
             bool byMonths = monthsSince >= limitMonths * factor;
             return byKm || byMonths;
         }
+
         private int MonthsSince(DateTime past, DateTime current)
         {
             return (current.Year - past.Year) * 12 + current.Month - past.Month;
@@ -137,28 +141,19 @@ namespace FleetMaintenance
         {
             GetLimits(vehicle.Type, out int oilKm, out int _, out int brakeKm, out int _, out int inspKm, out int _);
             
-            int last = 0;
-            int step = 0;
-            if (kind == "oil")
+            var config = new Dictionary<string, int[]>
             {
-                last = vehicle.LastOilKm;
-                step = oilKm;
-            }
-            else if (kind == "brake")
+                { "oil", new[] { vehicle.LastOilKm, oilKm } },
+                { "brake", new[] { vehicle.LastBrakeKm, brakeKm } },
+                { "insp", new[] { vehicle.LastInspKm, inspKm } }
+            };
+            
+            if (config.ContainsKey(kind))
             {
-                last = vehicle.LastBrakeKm;
-                step = brakeKm;
+                var data = config[kind];
+                return data[0] + data[1];
             }
-            else if (kind == "insp")
-            {
-                last = vehicle.LastInspKm;
-                step = inspKm;
-            }
-            else
-            {
-                return -1;
-            }
-            return last + step;
+            return -1;
         }
     }
 }
