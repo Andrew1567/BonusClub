@@ -20,7 +20,8 @@ namespace FleetMaintenance
             var sb = new StringBuilder();
             decimal total = 0m;
             int count = 0;
-            foreach (var v in _repo.Items)
+            // ТУТ ВАЖЛИВА ЗМІНА: _repo.Items -> _repo.All
+            foreach (var v in _repo.All)
             {
                 var tasks = _planner.Plan(v, fleetSize, false);
                 if (onlyDue && tasks.Count == 0)

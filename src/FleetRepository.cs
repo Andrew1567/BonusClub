@@ -5,16 +5,29 @@ namespace FleetMaintenance
 {
     public class FleetRepository
     {
-        public List<Vehicle> Items = new List<Vehicle>();
+        // Робимо поле приватним
+        private List<Vehicle> _items = new List<Vehicle>();
+
+        // Публічна властивість для читання
+        public IEnumerable<Vehicle> All
+        {
+            get { return _items; }
+        }
 
         public void Add(Vehicle v)
         {
-            Items.Add(v);
+            _items.Add(v);
+        }
+
+        // Додаємо метод для завантаження списку з імпортера
+        public void Load(IEnumerable<Vehicle> vehicles)
+        {
+            _items = new List<Vehicle>(vehicles);
         }
 
         public Vehicle FindByPlate(string plate)
         {
-            foreach (var v in Items)
+            foreach (var v in _items) // замінили Items на _items
             {
                 if (v.Plate == plate)
                 {
@@ -29,8 +42,11 @@ namespace FleetMaintenance
             try
             {
                 var v = FindByPlate(plate);
-                v.Odometer = km;
-                return true;
+                if (v != null)
+                {
+                    v.Odometer = km;
+                    return true;
+                }
             }
             catch (Exception)
             {
@@ -41,7 +57,7 @@ namespace FleetMaintenance
         public int CountActive()
         {
             int n = 0;
-            foreach (var v in Items)
+            foreach (var v in _items) // замінили Items на _items
             {
                 if (v.Active)
                 {

@@ -1,4 +1,5 @@
 using System;
+using System.Linq; // Важливий рядок для роботи .Count()
 
 namespace FleetMaintenance
 {
@@ -26,12 +27,16 @@ namespace FleetMaintenance
                 repo.Add(v);
             }
             var planner = new MaintenancePlanner();
-            foreach (var v in repo.Items)
+            
+            // Використовуємо All.Count() завдяки System.Linq
+            int fleetSize = repo.All.Count(); 
+            
+            foreach (var v in repo.All) // Змінили Items на All
             {
-                planner.Plan(v, repo.Items.Count, true);
+                planner.Plan(v, fleetSize, true);
             }
             var report = new FleetReport(repo);
-            report.Build(repo.Items.Count, true, true, true, false);
+            report.Build(fleetSize, true, true, true, false);
         }
     }
 }
