@@ -5,24 +5,7 @@ namespace FleetMaintenance
 {
     public class MaintenancePlanner
     {
-        private const double OverdueFactor = 1.1;
-        private const double DueSoonFactor = 0.9;
         private CostCalculator _calc = new CostCalculator();
-
-        private readonly Dictionary<string, int[]> _oilLimits = new Dictionary<string, int[]>
-        {
-            { "default", new[] { 10000, 12 } }, { "van", new[] { 15000, 12 } }, { "truck", new[] { 20000, 6 } }
-        };
-        
-        private readonly Dictionary<string, int[]> _brakeLimits = new Dictionary<string, int[]>
-        {
-            { "default", new[] { 30000, 24 } }, { "van", new[] { 40000, 24 } }, { "truck", new[] { 50000, 12 } }
-        };
-        
-        private readonly Dictionary<string, int[]> _inspLimits = new Dictionary<string, int[]>
-        {
-            { "default", new[] { 20000, 12 } }, { "van", new[] { 25000, 12 } }, { "truck", new[] { 30000, 6 } }
-        };
 
         public List<ServiceTask> Plan(Vehicle vehicle, int fleetSize,
             bool verbose, DateTime? now = null)
@@ -45,9 +28,9 @@ namespace FleetMaintenance
 
         private void GetLimits(string type, out int oilKm, out int oilMonths, out int brakeKm, out int brakeMonths, out int inspKm, out int inspMonths)
         {
-            var oil = _oilLimits.ContainsKey(type) ? _oilLimits[type] : _oilLimits["default"];
-            var brake = _brakeLimits.ContainsKey(type) ? _brakeLimits[type] : _brakeLimits["default"];
-            var insp = _inspLimits.ContainsKey(type) ? _inspLimits[type] : _inspLimits["default"];
+            var oil = ServicePolicy.OilLimits.ContainsKey(type) ? ServicePolicy.OilLimits[type] : ServicePolicy.OilLimits["default"];
+            var brake = ServicePolicy.BrakeLimits.ContainsKey(type) ? ServicePolicy.BrakeLimits[type] : ServicePolicy.BrakeLimits["default"];
+            var insp = ServicePolicy.InspLimits.ContainsKey(type) ? ServicePolicy.InspLimits[type] : ServicePolicy.InspLimits["default"];
 
             oilKm = oil[0]; oilMonths = oil[1];
             brakeKm = brake[0]; brakeMonths = brake[1];
@@ -93,7 +76,7 @@ namespace FleetMaintenance
 
         private string StateFor(int kmSince, int monthsSince, int limitKm, int limitMonths)
         {
-            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, OverdueFactor))
+            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, ServicePolicy.OverdueFactor))
             {
                 return "OVERDUE";
             }
@@ -101,7 +84,7 @@ namespace FleetMaintenance
             {
                 return "DUE";
             }
-            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, DueSoonFactor))
+            if (IsReached(kmSince, monthsSince, limitKm, limitMonths, ServicePolicy.DueSoonFactor))
             {
                 return "DUE_SOON";
             }
