@@ -1,0 +1,23 @@
+AA1001KA: oil OVERDUE
+  !!! overdue km=12000, months=8
+AA2002KB: oil OVERDUE
+  !!! overdue km=18000, months=14
+AA2002KB: insp OVERDUE
+  !!! overdue km=18000, months=14
+AA3003KC: oil OVERDUE
+  !!! overdue km=50000, months=7
+AA3003KC: brake DUE
+AA3003KC: insp OVERDUE
+  !!! overdue km=50000, months=7
+AA5005KH: oil DUE_SOON
+AA5005KH: insp DUE_SOON
+AA1001KA oil OVERDUE km=12000, months=8
+AA2002KB oil OVERDUE km=18000, months=14
+AA2002KB insp OVERDUE km=18000, months=14
+AA3003KC oil OVERDUE km=50000, months=7
+AA3003KC brake DUE km=50000, months=7
+AA3003KC insp OVERDUE km=50000, months=7
+AA5005KH oil DUE_SOON km=5000, months=11
+AA5005KH insp DUE_SOON km=5000, months=11
+Tasks: 8
+Total: 1238.0250
