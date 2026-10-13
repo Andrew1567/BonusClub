@@ -7,8 +7,7 @@ namespace FleetMaintenance
     public class FleetReport
     {
         private const decimal OverdueSurcharge = 1.15m;
-        private MaintenancePlanner _planner =
-            new MaintenancePlanner();
+        private MaintenancePlanner _planner = new MaintenancePlanner();
         private FleetRepository _repo;
 
         public FleetReport(FleetRepository repo)
@@ -43,12 +42,7 @@ namespace FleetMaintenance
                     }
                     if (withCosts)
                     {
-                        decimal c = t.Cost;
-                        if (t.State == "OVERDUE")
-                        {
-                            c = c * OverdueSurcharge;
-                        }
-                        total += c;
+                        total += ReportedCost(t);
                     }
                 }
             }
@@ -62,6 +56,16 @@ namespace FleetMaintenance
                 Console.WriteLine(sb.ToString());
             }
             return sb.ToString();
+        }
+
+        private decimal ReportedCost(ServiceTask t)
+        {
+            decimal c = t.Cost;
+            if (t.State == "OVERDUE")
+            {
+                c = c * OverdueSurcharge;
+            }
+            return c;
         }
 
         public string Summary(List<ServiceTask> tasks)
